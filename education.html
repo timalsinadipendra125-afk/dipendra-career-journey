@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education | Dipendra Timalsina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a192f;
+            --teal: #64ffda;
+            --teal-dim: #00c9a7;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: var(--navy);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--teal);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--teal);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+        /* ── MODE BADGES ── */
+        .mode-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mode-badge.show {
+            display: flex;
+        }
+
+        .mode-badge.visitor {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+        }
+
+        .mode-badge.admin {
+            background: rgba(100, 255, 218, 0.12);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            color: var(--teal);
+        }
+
+        .mode-badge button {
+            background: none;
+            border: none;
+            color: #f87171;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        /* ── ACCESS MODAL ── */
+        .pw-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            backdrop-filter: blur(6px);
+        }
+
+        .pw-overlay.show {
+            display: flex;
+        }
+
+        .pw-modal {
+            background: white;
+            border-radius: 22px;
+            padding: 42px 38px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Animated icon that changes with role */
+        .modal-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 28px;
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .modal-icon.visitor-icon {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.08));
+            border: 2px solid rgba(99, 102, 241, 0.35);
+            color: #818cf8;
+        }
+
+        .modal-icon.admin-icon {
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.2), rgba(0, 201, 167, 0.1));
+            border: 2px solid rgba(100, 255, 218, 0.35);
+            color: var(--teal);
+        }
+
+        .pw-modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 5px;
+        }
+
+        .pw-modal .modal-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        /* Role toggle tabs */
+        .role-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 10px 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .role-tab:hover {
+            border-color: #cbd5e1;
+        }
+
+        .role-tab.active.vtab {
+            border-color: #818cf8;
+            background: rgba(99, 102, 241, 0.07);
+            color: #4f46e5;
+        }
+
+        .role-tab.active.atab {
+            border-color: var(--teal);
+            background: rgba(100, 255, 218, 0.08);
+            color: #0d7a5f;
+        }
+
+        .pw-input-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .pw-input-wrap input {
+            width: 100%;
+            padding: 13px 46px 13px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+            letter-spacing: 3px;
+        }
+
+        .pw-input-wrap input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.15);
+        }
+
+        .pw-eye {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 15px;
+            user-select: none;
+        }
+
+        .pw-error {
+            font-size: 12px;
+            color: #ef4444;
+            margin-bottom: 12px;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .pw-error.show {
+            display: flex;
+        }
+
+        /* Submit button changes colour with role */
+        .btn-unlock {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-unlock.visitor-btn {
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            color: white;
+        }
+
+        .btn-unlock.admin-btn {
+            background: linear-gradient(135deg, var(--teal), var(--teal-dim));
+            color: var(--navy);
+        }
+
+        .btn-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        .btn-cancel {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            padding: 6px;
+        }
+
+        .btn-cancel:hover {
+            color: var(--navy);
+        }
+
+        .access-hint {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+            line-height: 1.9;
+        }
+
+        .access-hint strong {
+            color: #64748b;
+        }
+
+        /* ── PAGE BANNER ── */
+        .page-banner {
+            background: var(--navy);
+            padding: 55px 8% 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .page-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .banner-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner-label {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 12px;
+        }
+
+        .page-banner h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .page-banner h2 span {
+            color: var(--teal);
+        }
+
+        .page-banner p {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 60px 5% 80px;
+        }
+
+        /* ── TIMELINE ── */
+        .timeline {
+            position: relative;
+            padding-left: 36px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--teal), rgba(100, 255, 218, 0.1));
+            border-radius: 2px;
+        }
+
+        .tl-item {
+            position: relative;
+            margin-bottom: 44px;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        .tl-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .tl-dot {
+            position: absolute;
+            left: -36px;
+            top: 26px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--teal);
+            border: 3px solid var(--bg);
+            box-shadow: 0 0 0 2px var(--teal);
+            z-index: 2;
+            transition: transform 0.3s;
+        }
+
+        .tl-item:hover .tl-dot {
+            transform: scale(1.35);
+            box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.3);
+        }
+
+        .tl-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 28px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--teal);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tl-card::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(100, 255, 218, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .tl-item:hover .tl-card {
+            transform: translateY(-6px) translateX(4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .tl-item:hover .tl-card::after {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.15), rgba(0, 201, 167, 0.08));
+            border: 1px solid rgba(100, 255, 218, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon i {
+            font-size: 20px;
+            color: var(--teal);
+        }
+
+        .card-titles {
+            flex: 1;
+        }
+
+        .card-titles h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--teal);
+            background: rgba(100, 255, 218, 0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .card-divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(100, 255, 218, 0.3), transparent);
+            margin: 14px 0;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        .card-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .chip {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: var(--navy);
+            border: 1px solid #e2e8f0;
+        }
+
+        .year-badge {
+            position: absolute;
+            top: 20px;
+            right: 22px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ── CERT SECTION ── */
+        .cert-section {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .cert-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--navy);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cert-section-title i {
+            color: var(--teal);
+        }
+
+        /* Unlock nudge — shown only in public mode */
+        .unlock-nudge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.07);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            padding: 9px 14px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #6366f1;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .unlock-nudge:hover {
+            background: rgba(99, 102, 241, 0.13);
+        }
+
+        body.public-mode .unlock-nudge {
+            display: flex;
+        }
+
+        /* ── SLOT GRID ── */
+        .cert-slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .cert-slot {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8fafc;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+
+        /* Filled slot */
+        .cert-slot.filled {
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        .cert-slot.filled:hover {
+            border-color: var(--teal);
+        }
+
+        /* Only scale on non-public */
+        body:not(.public-mode) .cert-slot.filled:hover {
+            transform: scale(1.04);
+        }
+
+        /* Image — blurred in public, clear in visitor/admin */
+        .cert-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: filter 0.4s;
+        }
+
+        body.public-mode .cert-slot.filled img {
+            filter: blur(9px) brightness(0.55) saturate(0.6);
+        }
+
+        body.visitor-mode .cert-slot.filled img {
+            filter: none;
+        }
+
+        body.admin-mode .cert-slot.filled img {
+            filter: none;
+        }
+
+        /* Empty slot */
+        .cert-slot.empty {
+            border: 2px dashed #e8edf2;
+        }
+
+        body.admin-mode .cert-slot.empty {
+            border-color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        body.admin-mode .cert-slot.empty:hover {
+            border-color: var(--teal);
+            background: rgba(100, 255, 218, 0.04);
+        }
+
+        /* Lock overlay — public mode only */
+        .slot-lock-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            pointer-events: none;
+        }
+
+        body:not(.public-mode) .slot-lock-overlay {
+            display: none;
+        }
+
+        .slot-lock-overlay i {
+            font-size: 22px;
+            color: white;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+        }
+
+        .slot-lock-overlay span {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.5;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* View overlay — visitor + admin only */
+        .slot-view-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 25, 47, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        body:not(.public-mode) .cert-slot.filled:hover .slot-view-overlay {
+            opacity: 1;
+        }
+
+        .slot-view-overlay i {
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Remove button — admin only */
+        .slot-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 5;
+        }
+
+        body.admin-mode .cert-slot.filled:hover .slot-remove {
+            opacity: 1;
+        }
+
+        body:not(.admin-mode) .slot-remove {
+            display: none !important;
+        }
+
+        /* Add content — admin only */
+        .slot-add-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 5px;
+        }
+
+        body.admin-mode .slot-add-content {
+            display: flex;
+        }
+
+        .slot-add-content i {
+            font-size: 20px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .slot-add-content span {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            line-height: 1.3;
+            pointer-events: none;
+        }
+
+        .slot-file-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        body.admin-mode .slot-file-input {
+            display: block;
+        }
+
+        .slot-uploading {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.88);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .slot-uploading.active {
+            display: flex;
+        }
+
+        .mini-spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .slot-sync-indicator {
+            font-size: 10px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .slot-sync-indicator i {
+            font-size: 10px;
+        }
+
+        .slot-sync-indicator.synced {
+            color: #16a34a;
+        }
+
+        .slot-sync-indicator.syncing {
+            color: #2563eb;
+        }
+
+        .slot-sync-indicator.error {
+            color: #dc2626;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 30px 8%;
+        }
+
+        .social-icons {
+            margin-bottom: 12px;
+        }
+
+        .social-icons a {
+            color: #94a3b8;
+            margin: 0 12px;
+            font-size: 22px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--teal);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .access-trigger {
+            cursor: pointer;
+            opacity: 0.15;
+            transition: opacity 0.3s;
+            font-size: 11px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .access-trigger:hover {
+            opacity: 0.6;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 26px;
+            right: 26px;
+            background: var(--navy);
+            color: white;
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(70px);
+            opacity: 0;
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 99999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success i {
+            color: var(--teal);
+        }
+
+        .toast.error i {
+            color: #f87171;
+        }
+
+        .toast.info i {
+            color: #818cf8;
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.93);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99998;
+            padding: 20px;
+        }
+
+        #lightbox.active {
+            display: flex;
+        }
+
+        #lbImg {
+            max-width: 92vw;
+            max-height: 88vh;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            object-fit: contain;
+        }
+
+        .lb-close {
+            position: absolute;
+            top: 18px;
+            right: 26px;
+            font-size: 36px;
+            color: white;
+            cursor: pointer;
+            opacity: 0.75;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .lb-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            nav a {
+                margin-left: 12px;
+                font-size: 14px;
+            }
+
+            .timeline {
+                padding-left: 28px;
+            }
+
+            .tl-dot {
+                left: -28px;
+            }
+
+            .card-titles h3 {
+                font-size: 15px;
+            }
+
+            .year-badge {
+                position: static;
+                margin-top: 8px;
+            }
+
+            .cert-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pw-modal {
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body class="public-mode">
+
+    <!-- ══════════════════════════════════════
+     ACCESS MODAL  (visitor OR admin)
+══════════════════════════════════════ -->
+    <div class="pw-overlay" id="pwOverlay">
+        <div class="pw-modal">
+
+            <!-- Icon — changes with role -->
+            <div class="modal-icon visitor-icon" id="modalIcon">
+                <i class="fas fa-eye" id="modalIconI"></i>
+            </div>
+
+            <h3 id="modalTitle">Access Certificates</h3>
+            <p class="modal-subtitle" id="modalSub">Choose your role, then enter the password</p>
+
+            <!-- Role tabs -->
+            <div class="role-tabs">
+                <button class="role-tab vtab active" id="tabV" onclick="selectRole('visitor')">
+                    <i class="fas fa-eye"></i> Visitor
+                </button>
+                <button class="role-tab atab" id="tabA" onclick="selectRole('admin')">
+                    <i class="fas fa-shield-alt"></i> Admin
+                </button>
+            </div>
+
+            <div class="pw-input-wrap">
+                <input type="password" id="pwInput" placeholder="Enter password" autocomplete="off">
+                <span class="pw-eye" id="pwEye"><i class="fas fa-eye"></i></span>
+            </div>
+            <div class="pw-error" id="pwError">
+                <i class="fas fa-exclamation-circle"></i> Incorrect password
+            </div>
+
+            <button class="btn-unlock visitor-btn" id="pwSubmit">
+                <i class="fas fa-eye"></i> View Certificates
+            </button>
+            <button class="btn-cancel" id="pwCancel">Cancel</button>
+
+            <div class="access-hint">
+                <strong>Visitor</strong> — view full certificate images, no editing<br>
+                <strong>Admin</strong> — add, delete &amp; manage all images
+            </div>
+        </div>
+    </div>
+
+    <!-- ── HEADER ── -->
+    <header>
+        <div class="logo">Dipendra Timalsina</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="projects.html">Projects</a>
+            <a href="education.html">Education</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <!-- Visitor badge -->
+        <div class="mode-badge visitor" id="visitorBadge">
+            <i class="fas fa-eye"></i> Visitor Mode
+            <button id="visitorLogout">Exit</button>
+        </div>
+        <!-- Admin badge -->
+        <div class="mode-badge admin" id="adminBadge">
+            <i class="fas fa-shield-alt"></i> Admin Mode
+            <button id="adminLogout">Logout</button>
+        </div>
+    </header>
+
+    <!-- ── PAGE BANNER ── -->
+    <div class="page-banner">
+        <div class="banner-inner">
+            <span class="banner-label">Academic Background</span>
+            <h2>My <span>Education</span> Journey</h2>
+            <p>A path from foundational schooling to a Computer Science honours degree</p>
+        </div>
+    </div>
+
+    <main>
+        <div class="timeline">
+
+            <!-- Card 1: Ganga — no cert slots -->
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <span class="year-badge"><i class="far fa-calendar-alt"></i> Nursery – Grade 7</span>
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-school"></i></div>
+                        <div class="card-titles">
+                            <h3>Ganga Secondary School, Kalanki</h3>
+                            <span class="card-badge"><i class="fas fa-map-marker-alt"></i> Kalanki, Kathmandu</span>
+                        </div>
+                    </div>
+                    <div class="card-divider"></div>
+                    <p class="card-desc">Completed early foundational schooling with strong academic basics across core
+                        subjects, building discipline, curiosity and the groundwork for all future learning.</p>
+                    <div class="card-chips">
+                        <span class="chip">Core Academics</span>
+                        <span class="chip">Foundation Years</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: SEE -->
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <span class="year-badge"><i class="far fa-calendar-alt"></i> Grades 8 – 10</span>
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                        <div class="card-titles">
+                            <h3>Gyanodaya Secondary School, Kalanki</h3>
+                            <span class="card-badge"><i class="fas fa-map-marker-alt"></i> Kalanki, Kathmandu</span>
+                        </div>
+                    </div>
+                    <div class="card-divider"></div>
+                    <p class="card-desc">Completed Grade 10 with DLE MEAS 8 result: <strong>2.80</strong> and SEE
+                        result: <strong>3.35</strong>. Majored in Accounting and Environmental Science.</p>
+                    <div class="card-chips">
+                        <span class="chip">Accounting</span>
+                        <span class="chip">Environmental Science</span>
+                        <span class="chip">SEE — 3.35 GPA</span>
+                    </div>
+                    <div class="cert-section">
+                        <div class="cert-section-title"><i class="fas fa-certificate"></i> SEE Certificate &amp;
+                            Marksheet</div>
+                        <div class="unlock-nudge" onclick="openModal()">
+                            <i class="fas fa-eye"></i> Enter visitor password to view full certificates
+                        </div>
+                        <div class="cert-slots" data-key="edu_see"></div>
+                        <div class="slot-sync-indicator" id="sync_edu_see">
+                            <i class="fas fa-circle-notch fa-spin"></i> Loading…
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: +2 -->
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <span class="year-badge"><i class="far fa-calendar-alt"></i> Grades 11 – 12</span>
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-file-contract"></i></div>
+                        <div class="card-titles">
+                            <h3>ED-Mark Academy College</h3>
+                            <span class="card-badge"><i class="fas fa-book"></i> Plus Two — Law</span>
+                        </div>
+                    </div>
+                    <div class="card-divider"></div>
+                    <p class="card-desc">Studied Law with comprehensive coverage of legal documentation and practice.
+                        Strengthened critical thinking, argumentation, and research skills.</p>
+                    <div class="card-chips">
+                        <span class="chip">Law</span>
+                        <span class="chip">Legal Documentation</span>
+                        <span class="chip">Analytical Thinking</span>
+                    </div>
+                    <div class="cert-section">
+                        <div class="cert-section-title"><i class="fas fa-certificate"></i> +2 Certificate &amp;
+                            Marksheet</div>
+                        <div class="unlock-nudge" onclick="openModal()">
+                            <i class="fas fa-eye"></i> Enter visitor password to view full certificates
+                        </div>
+                        <div class="cert-slots" data-key="edu_plus2"></div>
+                        <div class="slot-sync-indicator" id="sync_edu_plus2">
+                            <i class="fas fa-circle-notch fa-spin"></i> Loading…
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: BCS -->
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <span class="year-badge"><i class="far fa-calendar-alt"></i> 2021 – 2024</span>
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+                        <div class="card-titles">
+                            <h3>Herald College, Kathmandu</h3>
+                            <span class="card-badge"><i class="fas fa-graduation-cap"></i> BCS Hons — University of
+                                Wolverhampton, UK</span>
+                        </div>
+                    </div>
+                    <div class="card-divider"></div>
+                    <p class="card-desc">Completed a 3-year Bachelor of Computer Science (Honours) degree affiliated
+                        with the <strong>University of Wolverhampton, UK</strong>. Focused on Software Testing, CCNA
+                        Networking, and Full Stack Web Development.</p>
+                    <div class="card-chips">
+                        <span class="chip">Software Testing</span>
+                        <span class="chip">CCNA Networking</span>
+                        <span class="chip">Full Stack Dev</span>
+                        <span class="chip">Node.js</span>
+                        <span class="chip">Agile / QA</span>
+                        <span class="chip">UK Affiliated</span>
+                    </div>
+                    <div class="cert-section">
+                        <div class="cert-section-title"><i class="fas fa-certificate"></i> Degree, Transcript &amp;
+                            Awards</div>
+                        <div class="unlock-nudge" onclick="openModal()">
+                            <i class="fas fa-eye"></i> Enter visitor password to view full certificates
+                        </div>
+                        <div class="cert-slots" data-key="edu_bcs"></div>
+                        <div class="slot-sync-indicator" id="sync_edu_bcs">
+                            <i class="fas fa-circle-notch fa-spin"></i> Loading…
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="social-icons">
+            <a href="https://www.linkedin.com/in/dipendra-timalsina-24776725a/" target="_blank"><i
+                    class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/dipendra1186" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/its_dipendra7/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <!-- Tiny hidden key — click to open access modal -->
+        <p>© 2026 Dipendra Timalsina | Kathmandu, Nepal
+            <i class="fas fa-key access-trigger" id="accessTrigger" title=""></i>
+        </p>
+    </footer>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox">
+        <span class="lb-close" id="lbClose">&times;</span>
+        <img id="lbImg" src="" alt="Certificate">
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Done!</span>
+    </div>
+
+    <script>
+        // ════════════════════════════════════════════════════════════
+        //  ⚙️  YOUR CREDENTIALS
+        // ════════════════════════════════════════════════════════════
+        const VISITOR_PASSWORD = 'visitor123';        // 🔑 Share with companies/recruiters
+        const ADMIN_PASSWORD = 'dipendra2026';      // 🔑 NEVER share — only for you
+        const EDU_JSONBIN_ID = '69a14a47d0ea881f40de2f02';
+        const EDU_JSONBIN_KEY = '$2a$10$RJ9Llpn50qdjpUo5XO.2guOaGDxTrxUPkcX2747BCRhmCBwCmgXYG';
+        // ════════════════════════════════════════════════════════════
+
+        const CLOUD_NAME = 'dheesdhyx';
+        const UPLOAD_PRESET = 'Certificates';
+        const MAX_SLOTS = 4;
+        const EDU_KEYS = ['edu_see', 'edu_plus2', 'edu_bcs'];
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${EDU_JSONBIN_ID}`;
+
+        let cloudData = { edu_see: [], edu_plus2: [], edu_bcs: [] };
+        let accessLevel = 'public';   // 'public' | 'visitor' | 'admin'
+        let selectedRole = 'visitor'; // which tab is active in modal
+
+        // ── Set access level ──────────────────────────────────────
+        function setAccessLevel(level) {
+            accessLevel = level;
+            document.body.classList.remove('public-mode', 'visitor-mode', 'admin-mode');
+            document.body.classList.add(level + '-mode');
+
+            document.getElementById('visitorBadge').classList.toggle('show', level === 'visitor');
+            document.getElementById('adminBadge').classList.toggle('show', level === 'admin');
+
+            // Re-render all slot grids
+            document.querySelectorAll('.cert-slots').forEach(renderSlots);
+
+            // Update sync indicator text
+            if (level === 'public') {
+                EDU_KEYS.forEach(k => {
+                    const count = (cloudData[k] || []).filter(Boolean).length;
+                    if (count > 0)
+                        setSyncIndicator(k, 'synced',
+                            count + ' image' + (count !== 1 ? 's' : '') + ' — 🔒 enter password to view');
+                });
+            }
+        }
+
+        // ── Role tab selection ────────────────────────────────────
+        function selectRole(role) {
+            selectedRole = role;
+
+            const tabV = document.getElementById('tabV');
+            const tabA = document.getElementById('tabA');
+            const btn = document.getElementById('pwSubmit');
+            const icon = document.getElementById('modalIcon');
+            const iconI = document.getElementById('modalIconI');
+
+            tabV.className = 'role-tab vtab' + (role === 'visitor' ? ' active' : '');
+            tabA.className = 'role-tab atab' + (role === 'admin' ? ' active' : '');
+
+            if (role === 'visitor') {
+                icon.className = 'modal-icon visitor-icon';
+                iconI.className = 'fas fa-eye';
+                btn.className = 'btn-unlock visitor-btn';
+                btn.innerHTML = '<i class="fas fa-eye"></i> View Certificates';
+            } else {
+                icon.className = 'modal-icon admin-icon';
+                iconI.className = 'fas fa-shield-alt';
+                btn.className = 'btn-unlock admin-btn';
+                btn.innerHTML = '<i class="fas fa-shield-alt"></i> Enter Admin Panel';
+            }
+        }
+
+        // ── Modal open / close ────────────────────────────────────
+        function openModal() {
+            document.getElementById('pwInput').value = '';
+            document.getElementById('pwError').classList.remove('show');
+            selectRole('visitor'); // always default to visitor tab
+            document.getElementById('pwOverlay').classList.add('show');
+            setTimeout(() => document.getElementById('pwInput').focus(), 100);
+        }
+        function closeModal() {
+            document.getElementById('pwOverlay').classList.remove('show');
+        }
+
+        // Triggers
+        document.getElementById('accessTrigger').addEventListener('click', openModal);
+        document.getElementById('pwCancel').addEventListener('click', closeModal);
+        document.getElementById('pwOverlay').addEventListener('click', e => {
+            if (e.target === document.getElementById('pwOverlay')) closeModal();
+        });
+        document.getElementById('pwSubmit').addEventListener('click', checkPassword);
+        document.getElementById('pwInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Eye toggle
+        document.getElementById('pwEye').addEventListener('click', () => {
+            const inp = document.getElementById('pwInput');
+            const icon = document.querySelector('#pwEye i');
+            if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+            else { inp.type = 'password'; icon.className = 'fas fa-eye'; }
+        });
+
+        // Password check
+        function checkPassword() {
+            const val = document.getElementById('pwInput').value;
+            const err = document.getElementById('pwError');
+
+            if (selectedRole === 'visitor' && val === VISITOR_PASSWORD) {
+                closeModal();
+                setAccessLevel('visitor');
+                showToast('Visitor access granted — you can view all certificates', 'info');
+
+            } else if (selectedRole === 'admin' && val === ADMIN_PASSWORD) {
+                closeModal();
+                setAccessLevel('admin');
+                showToast('Admin mode active — full control unlocked', 'success');
+
+            } else {
+                err.classList.add('show');
+                document.getElementById('pwInput').value = '';
+                document.getElementById('pwInput').focus();
+                setTimeout(() => err.classList.remove('show'), 2500);
+            }
+        }
+
+        // Logout buttons
+        document.getElementById('visitorLogout').addEventListener('click', () => {
+            setAccessLevel('public');
+            showToast('Returned to public view');
+        });
+        document.getElementById('adminLogout').addEventListener('click', () => {
+            setAccessLevel('public');
+            showToast('Logged out');
+        });
+
+        // ── Toast ─────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = 'toast ' + type;
+            const icons = { success: 'fas fa-check-circle', error: 'fas fa-exclamation-circle', info: 'fas fa-eye' };
+            t.querySelector('i').className = icons[type] || icons.success;
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        // ── Lightbox ──────────────────────────────────────────────
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+
+        function openLightbox(src) {
+            if (accessLevel === 'public') { openModal(); return; }
+            lbImg.src = src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('lbClose').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        // ── Sync indicator ────────────────────────────────────────
+        function setSyncIndicator(key, state, msg) {
+            const el = document.getElementById('sync_' + key);
+            if (!el) return;
+            el.className = 'slot-sync-indicator ' + state;
+            const icons = { synced: 'fas fa-check-circle', syncing: 'fas fa-circle-notch fa-spin', error: 'fas fa-exclamation-circle' };
+            el.innerHTML = '<i class="' + (icons[state] || icons.syncing) + '"></i> ' + msg;
+        }
+
+        // ── Cloud READ ────────────────────────────────────────────
+        async function cloudRead() {
+            EDU_KEYS.forEach(k => setSyncIndicator(k, 'syncing', 'Loading…'));
+            try {
+                const res = await fetch(JSONBIN_URL + '/latest', { headers: { 'X-Master-Key': EDU_JSONBIN_KEY } });
+                const json = await res.json();
+                const record = json.record || {};
+
+                EDU_KEYS.forEach(k => {
+                    cloudData[k] = Array.isArray(record[k]) ? record[k] : [];
+                    localStorage.setItem(k, JSON.stringify(cloudData[k]));
+                    const count = cloudData[k].filter(Boolean).length;
+                    setSyncIndicator(k, 'synced',
+                        count > 0
+                            ? count + ' image' + (count !== 1 ? 's' : '') + ' — 🔒 enter password to view'
+                            : 'No images uploaded yet');
+                });
+            } catch (e) {
+                EDU_KEYS.forEach(k => {
+                    try { cloudData[k] = JSON.parse(localStorage.getItem(k)) || []; } catch (_) { cloudData[k] = []; }
+                    setSyncIndicator(k, 'error', 'Cloud unavailable — showing cached');
+                });
+            }
+        }
+
+        // ── Cloud WRITE ───────────────────────────────────────────
+        async function cloudWrite(changedKey) {
+            EDU_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(cloudData[k])));
+            setSyncIndicator(changedKey, 'syncing', 'Saving…');
+            try {
+                await fetch(JSONBIN_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': EDU_JSONBIN_KEY },
+                    body: JSON.stringify(cloudData)
+                });
+                const count = cloudData[changedKey].filter(Boolean).length;
+                setSyncIndicator(changedKey, 'synced', 'Synced — ' + count + ' image' + (count !== 1 ? 's' : ''));
+            } catch (e) {
+                setSyncIndicator(changedKey, 'error', 'Save failed — check connection');
+            }
+        }
+
+        // ── Cloudinary upload ─────────────────────────────────────
+        async function uploadToCloudinary(file) {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('upload_preset', UPLOAD_PRESET);
+            fd.append('folder', 'education');
+            const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/upload', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
+            return data.secure_url;
+        }
+
+        // ── Render slots ──────────────────────────────────────────
+        function renderSlots(container) {
+            const key = container.dataset.key;
+            const saved = cloudData[key] || [];
+            container.innerHTML = '';
+
+            for (let i = 0; i < MAX_SLOTS; i++) {
+                const url = saved[i] || null;
+                const slot = document.createElement('div');
+
+                if (url) {
+                    // ── FILLED SLOT ──────────────────────────────
+                    slot.className = 'cert-slot filled';
+                    slot.innerHTML =
+                        '<img src="' + url + '" alt="Certificate ' + (i + 1) + '">' +
+                        '<div class="slot-lock-overlay">' +
+                        '<i class="fas fa-lock"></i>' +
+                        '<span>Password required<br>to view</span>' +
+                        '</div>' +
+                        '<div class="slot-view-overlay"><i class="fas fa-expand-alt"></i></div>' +
+                        '<button class="slot-remove" title="Remove"><i class="fas fa-times"></i></button>' +
+                        '<div class="slot-uploading"><div class="mini-spinner"></div></div>';
+
+                    // Click — public opens modal, visitor/admin opens lightbox
+                    slot.addEventListener('click', () => {
+                        if (accessLevel === 'public') { openModal(); return; }
+                        openLightbox(url);
+                    });
+
+                    // Remove (admin only — CSS hides it otherwise)
+                    slot.querySelector('.slot-remove').addEventListener('click', async e => {
+                        e.stopPropagation();
+                        if (accessLevel !== 'admin') return;
+                        if (!confirm('Remove this image from all devices?')) return;
+                        cloudData[key][i] = null;
+                        while (cloudData[key].length && !cloudData[key][cloudData[key].length - 1])
+                            cloudData[key].pop();
+                        await cloudWrite(key);
+                        renderSlots(container);
+                        showToast('Image removed from all devices.');
+                    });
+
+                } else {
+                    // ── EMPTY SLOT ───────────────────────────────
+                    slot.className = 'cert-slot empty';
+                    slot.innerHTML =
+                        '<input class="slot-file-input" type="file" accept="image/*">' +
+                        '<div class="slot-add-content">' +
+                        '<i class="fas fa-plus"></i>' +
+                        '<span>Add<br>Image</span>' +
+                        '</div>' +
+                        '<div class="slot-uploading"><div class="mini-spinner"></div></div>';
+
+                    const input = slot.querySelector('.slot-file-input');
+                    input.addEventListener('change', async () => {
+                        if (accessLevel !== 'admin') return;
+                        const file = input.files[0];
+                        if (!file) return;
+                        const spinner = slot.querySelector('.slot-uploading');
+                        spinner.classList.add('active');
+                        input.style.pointerEvents = 'none';
+                        try {
+                            const uploadedUrl = await uploadToCloudinary(file);
+                            cloudData[key][i] = uploadedUrl;
+                            await cloudWrite(key);
+                            renderSlots(container);
+                            showToast('Saved and synced to all devices!');
+                        } catch (err) {
+                            showToast('Upload failed: ' + err.message, 'error');
+                            spinner.classList.remove('active');
+                            input.style.pointerEvents = '';
+                        }
+                    });
+                }
+
+                container.appendChild(slot);
+            }
+        }
+
+        // ── Init ──────────────────────────────────────────────────
+        async function init() {
+            await cloudRead();
+            setAccessLevel('public'); // start locked
+        }
+
+        init();
+
+        // ── Scroll animation ──────────────────────────────────────
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.tl-item').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
+

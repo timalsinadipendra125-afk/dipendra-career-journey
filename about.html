@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Dipendra Timalsina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a192f;
+            --teal: #64ffda;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: var(--navy);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--teal);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--teal);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* ── BANNER (same style as certificates.html) ── */
+        .page-banner {
+            background: var(--navy);
+            padding: 50px 8% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .page-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .banner-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-banner h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .page-banner h2 span {
+            color: var(--teal);
+        }
+
+        .page-banner p {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        /* ── ABOUT SECTION ── */
+        .about-section {
+            background: white;
+            padding: 60px 8%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .about-text {
+            max-width: 56%;
+        }
+
+        .about-text .tag {
+            display: inline-block;
+            background: #e8f5f0;
+            color: #0a7a5a;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .about-text h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .about-text .subtitle {
+            display: inline-block;
+            font-size: 14px;
+            color: var(--teal);
+            background: var(--navy);
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .about-text p {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btn {
+            background: var(--navy);
+            color: white;
+            padding: 10px 22px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn:hover {
+            background: var(--teal);
+            color: var(--navy);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--navy);
+            border: 2px solid var(--navy);
+        }
+
+        .btn-outline:hover {
+            background: var(--navy);
+            color: var(--teal);
+        }
+
+        .about-image img {
+            width: 280px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            display: block;
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            background: var(--navy);
+            padding: 30px 8%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-around;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-item .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .stat-item .lbl {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-top: 3px;
+        }
+
+        /* ── GENERIC SECTION ── */
+        section {
+            padding: 60px 8%;
+        }
+
+        h2.section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--navy);
+            font-size: 26px;
+            position: relative;
+        }
+
+        h2.section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--teal);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* ── SKILLS ── */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .skill-card {
+            background: white;
+            padding: 18px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid var(--teal);
+            transition: 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .skill-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skill-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--navy);
+        }
+
+        .skill-pct {
+            font-size: 13px;
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        .skill-bar-bg {
+            background: #e2e8f0;
+            border-radius: 4px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--navy), var(--teal));
+            width: 0;
+            transition: width 1.2s ease;
+        }
+
+        /* ── INTERESTS ── */
+        .interests-section {
+            background: white;
+            padding: 60px 8%;
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .interest-card {
+            background: var(--bg);
+            padding: 25px 18px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .interest-card:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .interest-card i {
+            font-size: 26px;
+            color: var(--navy);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .interest-card p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ── EDUCATION ── */
+        .education-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .edu-card {
+            background: var(--navy);
+            color: white;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--teal);
+            transition: 0.3s;
+        }
+
+        .edu-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .edu-badge {
+            display: inline-block;
+            background: rgba(100, 255, 218, 0.15);
+            color: var(--teal);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .edu-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .edu-card p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 30px 8%;
+            margin-top: 0;
+        }
+
+        .social-icons {
+            margin-bottom: 12px;
+        }
+
+        .social-icons a {
+            color: #94a3b8;
+            margin: 0 12px;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--teal);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .about-text {
+                max-width: 100%;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">Dipendra Timalsina</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="projects.html">Projects</a>
+            <a href="education.html">Education</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- BANNER -->
+    <div class="page-banner">
+        <div class="banner-inner">
+            <h2>About <span>Me</span></h2>
+            <p>IT Professional · Developer · Networker</p>
+        </div>
+    </div>
+
+    <!-- ABOUT SECTION -->
+    <div class="about-section">
+        <div class="about-text">
+            <span class="tag">👋 Hello there!</span>
+            <h1>I'm Dipendra Timalsina</h1>
+            <div class="subtitle">IT Professional &amp; Developer</div>
+            <p>
+                A passionate IT professional with expertise in Software Testing, Networking (CCNA),
+                and Full Stack Web Development. I enjoy solving complex problems, building secure
+                applications, and continuously learning new technologies.
+            </p>
+            <p>
+                With a strong foundation in manual &amp; regression testing and practical experience
+                in Node.js and web development, I aim to deliver high-quality software solutions
+                and contribute to innovative IT projects.
+            </p>
+            <div class="btn-group">
+                <a href="contact.html" class="btn"><i class="fas fa-paper-plane"></i> Hire Me</a>
+                <a href="projects.html" class="btn btn-outline"><i class="fas fa-code"></i> My Projects</a>
+            </div>
+        </div>
+        <div class="about-image">
+            <img src="./assets/images/profile1.png" alt="Dipendra Timalsina">
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="num">2+</div>
+            <div class="lbl">Years Experience</div>
+        </div>
+        <div class="stat-item">
+            <div class="num">10+</div>
+            <div class="lbl">Projects Built</div>
+        </div>
+        <div class="stat-item">
+            <div class="num">CCNA</div>
+            <div class="lbl">Certified</div>
+        </div>
+        <div class="stat-item">
+            <div class="num">BSc</div>
+            <div class="lbl">Computer Science</div>
+        </div>
+    </div>
+
+    <!-- SKILLS -->
+    <section>
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">Manual &amp; Regression Testing</span><span
+                        class="skill-pct">90%</span></div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="90"></div>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">HTML, CSS, JavaScript</span><span
+                        class="skill-pct">85%</span></div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="85"></div>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">Node.js Backend</span><span class="skill-pct">75%</span>
+                </div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="75"></div>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">CCNA Networking</span><span class="skill-pct">88%</span>
+                </div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="88"></div>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">Git &amp; Version Control</span><span
+                        class="skill-pct">80%</span></div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="80"></div>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-top"><span class="skill-name">Agile &amp; QA Documentation</span><span
+                        class="skill-pct">82%</span></div>
+                <div class="skill-bar-bg">
+                    <div class="skill-bar-fill" data-width="82"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERESTS -->
+    <div class="interests-section">
+        <h2 class="section-title">Areas of Interest</h2>
+        <div class="interests-grid">
+            <div class="interest-card"><i class="fas fa-bug"></i>
+                <p>Software Testing &amp; QA</p>
+            </div>
+            <div class="interest-card"><i class="fas fa-network-wired"></i>
+                <p>Networking &amp; Security</p>
+            </div>
+            <div class="interest-card"><i class="fas fa-code"></i>
+                <p>Full Stack Development</p>
+            </div>
+            <div class="interest-card"><i class="fas fa-shield-halved"></i>
+                <p>Cybersecurity</p>
+            </div>
+            <div class="interest-card"><i class="fas fa-server"></i>
+                <p>Backend Systems</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <section>
+        <h2 class="section-title">Education</h2>
+        <div class="education-grid">
+            <div class="edu-card">
+                <div class="edu-badge">2021 – 2025</div>
+                <h3>Bachelor's in Computer Science</h3>
+                <p>Herald College Kathmandu<br>Graduated: 2025</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-badge">2024</div>
+                <h3>CCNA Networking Certification</h3>
+                <p>Cisco Networking Academy<br>Completed: 2024</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="social-icons">
+            <a href="https://www.linkedin.com/in/dipendra-timalsina-24776725a/" target="_blank"><i
+                    class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/dipendra1186" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/its_dipendra7/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2026 Dipendra Timalsina | Kathmandu, Nepal</p>
+    </footer>
+
+    <script>
+        // Animate skill bars when scrolled into view
+        const bars = document.querySelectorAll('.skill-bar-fill');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.style.width = e.target.dataset.width + '%';
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        bars.forEach(b => observer.observe(b));
+    </script>
+</body>
+
+</html>
+

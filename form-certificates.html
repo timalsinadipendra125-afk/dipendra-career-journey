@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Certificates | Dipendra Timalsina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a192f;
+            --teal: #64ffda;
+            --teal-dim: #00c9a7;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --danger: #ef4444;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: var(--navy);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--teal);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--teal);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* ── SETUP BANNER ── */
+        .setup-banner {
+            background: #fffbeb;
+            border: 1.5px solid #fcd34d;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 0 auto 36px;
+            max-width: 640px;
+            display: none;
+            /* shown by JS if not configured */
+        }
+
+        .setup-banner.show {
+            display: block;
+        }
+
+        .setup-banner h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .setup-banner ol {
+            font-size: 13px;
+            color: #78350f;
+            padding-left: 18px;
+            line-height: 2;
+        }
+
+        .setup-banner a {
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        .setup-banner code {
+            background: #fef3c7;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* ── PAGE WRAPPER ── */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 5%;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h2 {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .page-title p {
+            color: var(--muted);
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        /* Sync status bar */
+        .sync-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sync-bar.ok {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .sync-bar.busy {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        .sync-bar.err {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 36px;
+            box-shadow: var(--shadow);
+            max-width: 640px;
+            margin: 0 auto 50px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-card h3 i {
+            color: var(--teal);
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #f8fafc;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--teal);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--teal);
+            background: rgba(100, 255, 218, 0.05);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone i {
+            font-size: 30px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .drop-zone p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .drop-zone span {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .preview-item img {
+            width: 80px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--teal), var(--teal-dim));
+            color: var(--navy);
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 255, 218, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .upload-status {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #166534;
+            margin-bottom: 14px;
+        }
+
+        .upload-status.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #bbf7d0;
+            border-top-color: #16a34a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--navy);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success i {
+            color: var(--teal);
+        }
+
+        .toast.error i {
+            color: #f87171;
+        }
+
+        /* List */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .list-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .cert-count {
+            background: var(--navy);
+            color: var(--teal);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .cert-item {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: 0.3s;
+            animation: slideIn 0.3s ease;
+        }
+
+        .cert-item:hover {
+            transform: translateX(4px);
+            border-color: #cbd5e1;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cert-images {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .cert-images img {
+            width: 70px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 7px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cert-images img:hover {
+            border-color: var(--teal);
+            transform: scale(1.05);
+        }
+
+        .cert-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cert-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cert-info p {
+            font-size: 13px;
+            color: var(--muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .cert-info small {
+            font-size: 11px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .cert-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 7px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background: var(--danger);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        #lightbox.active {
+            display: flex;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lb-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 36px;
+            color: white;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.8;
+            transition: 0.2s;
+        }
+
+        .lb-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @media(max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+
+            .cert-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">Dipendra Timalsina</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="projects.html">Projects</a>
+            <a href="education.html">Education</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="page-wrapper">
+
+        <div class="page-title">
+            <h2>Manage Certificates</h2>
+            <p>Add or delete certificates. Changes sync to all devices instantly.</p>
+        </div>
+
+        <!-- Setup instructions shown until configured -->
+        <div class="setup-banner" id="setupBanner">
+            <h4><i class="fas fa-exclamation-triangle"></i> One-time setup needed to sync across devices</h4>
+            <ol>
+                <li>Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → sign up free</li>
+                <li>Click <strong>+ Create Bin</strong> → paste <code>[]</code> as content → Save</li>
+                <li>Copy the <strong>BIN ID</strong> (looks like: <code>66a1b2c3d4e5f6...</code>)</li>
+                <li>Go to <strong>API Keys</strong> tab → copy your <strong>X-Master-Key</strong></li>
+                <li>Open this file in a text editor → find <code>JSONBIN_ID</code> and <code>JSONBIN_KEY</code> at the
+                    top of the &lt;script&gt; and paste your values</li>
+            </ol>
+        </div>
+
+        <!-- Sync status -->
+        <div class="sync-bar busy" id="syncBar">
+            <div class="sync-dot"></div>
+            <span id="syncMsg">Connecting to cloud…</span>
+        </div>
+
+        <!-- ADD FORM -->
+        <div class="form-card">
+            <h3><i class="fas fa-plus-circle"></i> Add New Certificate</h3>
+
+            <div class="upload-status" id="uploadStatus">
+                <div class="spinner"></div>
+                <span id="uploadMsg">Uploading images to Cloudinary…</span>
+            </div>
+
+            <form id="cert-form" novalidate>
+                <div class="form-group">
+                    <label>Certificate Subject / Title *</label>
+                    <input type="text" id="subject" placeholder="e.g. CCNA Networking Fundamentals" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Certificate Image(s) *</label>
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="image" accept="image/*" multiple required>
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p><span>Click to upload</span> or drag &amp; drop</p>
+                        <p>PNG, JPG, JPEG — multiple allowed</p>
+                    </div>
+                    <div class="image-preview" id="preview"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Short Description *</label>
+                    <textarea id="description" placeholder="Brief description of this certificate…" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Date Issued *</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-certificate"></i> Add Certificate
+                </button>
+            </form>
+        </div>
+
+        <div class="list-header">
+            <h3>Existing Certificates</h3>
+            <span class="cert-count" id="certCount">0 added</span>
+        </div>
+        <div id="cert-list"></div>
+
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox">
+        <span class="lb-close" id="lbClose">&times;</span>
+        <img id="lbImg" src="" alt="Certificate preview">
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Done!</span>
+    </div>
+
+    <script>
+        // ════════════════════════════════════════════════════════
+        //  ⚙️  PASTE YOUR CREDENTIALS HERE
+        // ════════════════════════════════════════════════════════
+        const JSONBIN_ID = '69a14525ae596e708f4e8801';   // e.g. '66a1b2c3d4e5f67890abcdef'
+        const JSONBIN_KEY = '$2a$10$RJ9Llpn50qdjpUo5XO.2guOaGDxTrxUPkcX2747BCRhmCBwCmgXYG'; // e.g. '$2a$10$abc...'
+
+        const CLOUD_NAME = 'dheesdhyx';
+        const UPLOAD_PRESET = 'Certificates';
+
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+        const CONFIGURED = JSONBIN_ID !== 'YOUR_BIN_ID_HERE' && JSONBIN_KEY !== 'YOUR_MASTER_KEY_HERE';
+
+        // ── Show setup banner if not configured ──────────────────
+        if (!CONFIGURED) {
+            document.getElementById('setupBanner').classList.add('show');
+            setSyncBar('err', '⚠ Not configured — data is saved locally only (not synced)');
+        }
+
+        // ── Sync bar helper ──────────────────────────────────────
+        function setSyncBar(state, msg) {
+            const bar = document.getElementById('syncBar');
+            bar.className = `sync-bar ${state}`;
+            document.getElementById('syncMsg').textContent = msg;
+        }
+
+        // ── Toast ────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = `toast ${type}`;
+            t.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        // ── Cloud read ───────────────────────────────────────────
+        async function cloudRead() {
+            if (!CONFIGURED) {
+                return JSON.parse(localStorage.getItem('certificates')) || [];
+            }
+            setSyncBar('busy', 'Loading certificates…');
+            try {
+                const res = await fetch(JSONBIN_URL + '/latest', {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+                const data = await res.json();
+                const certs = Array.isArray(data.record) ? data.record : [];
+                // keep local cache in sync
+                localStorage.setItem('certificates', JSON.stringify(certs));
+                setSyncBar('ok', `Synced — ${certs.length} certificate${certs.length !== 1 ? 's' : ''} in cloud`);
+                return certs;
+            } catch (e) {
+                setSyncBar('err', 'Cloud unavailable — showing local cache');
+                return JSON.parse(localStorage.getItem('certificates')) || [];
+            }
+        }
+
+        // ── Cloud write ──────────────────────────────────────────
+        async function cloudWrite(certs) {
+            localStorage.setItem('certificates', JSON.stringify(certs));
+            if (!CONFIGURED) return;
+            setSyncBar('busy', 'Saving to cloud…');
+            try {
+                await fetch(JSONBIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_KEY
+                    },
+                    body: JSON.stringify(certs)
+                });
+                setSyncBar('ok', `Synced — ${certs.length} certificate${certs.length !== 1 ? 's' : ''} in cloud`);
+            } catch (e) {
+                setSyncBar('err', 'Cloud save failed — saved locally only');
+            }
+        }
+
+        // ── Drag & drop preview ──────────────────────────────────
+        const imageInput = document.getElementById('image');
+        const preview = document.getElementById('preview');
+        const dropZone = document.getElementById('dropZone');
+
+        imageInput.addEventListener('change', handleFiles);
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            imageInput.files = e.dataTransfer.files;
+            handleFiles();
+        });
+
+        function handleFiles() {
+            preview.innerHTML = '';
+            Array.from(imageInput.files).forEach(file => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                const wrap = document.createElement('div');
+                wrap.className = 'preview-item';
+                wrap.appendChild(img);
+                preview.appendChild(wrap);
+            });
+        }
+
+        // ── Cloudinary upload ────────────────────────────────────
+        async function uploadToCloudinary(file) {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('upload_preset', UPLOAD_PRESET);
+            fd.append('folder', 'certificates');
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
+            return data.secure_url;
+        }
+
+        // ── Form submit ──────────────────────────────────────────
+        const form = document.getElementById('cert-form');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const uploadMsg = document.getElementById('uploadMsg');
+
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            const subject = document.getElementById('subject').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const date = document.getElementById('date').value;
+            const files = Array.from(imageInput.files);
+
+            if (!subject || !description || !date || files.length === 0) {
+                showToast('Please fill all fields and select at least one image.', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            uploadStatus.classList.add('active');
+
+            try {
+                const urls = [];
+                for (let i = 0; i < files.length; i++) {
+                    uploadMsg.textContent = `Uploading image ${i + 1} of ${files.length}…`;
+                    urls.push(await uploadToCloudinary(files[i]));
+                }
+
+                uploadMsg.textContent = 'Saving to cloud…';
+                const certs = await cloudRead();
+                certs.push({ subject, description, date, images: urls });
+                await cloudWrite(certs);
+
+                await renderList();
+                form.reset();
+                preview.innerHTML = '';
+                showToast('Certificate added and synced to all devices!');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                uploadStatus.classList.remove('active');
+            }
+        });
+
+        // ── Render list ──────────────────────────────────────────
+        async function renderList() {
+            const list = document.getElementById('cert-list');
+            const certs = await cloudRead();
+            document.getElementById('certCount').textContent = `${certs.length} added`;
+            list.innerHTML = '';
+
+            if (certs.length === 0) {
+                list.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-certificate"></i>
+                    <p>No certificates yet. Add your first one above!</p>
+                </div>`;
+                return;
+            }
+
+            certs.forEach((cert, idx) => {
+                const div = document.createElement('div');
+                div.className = 'cert-item';
+
+                const imgsHTML = (cert.images || []).map(url =>
+                    `<img src="${url}" alt="cert" onclick="openLightbox('${url}')">`
+                ).join('');
+
+                div.innerHTML = `
+                <div class="cert-images">${imgsHTML}</div>
+                <div class="cert-info">
+                    <h4>${cert.subject}</h4>
+                    <p>${cert.description}</p>
+                    <small><i class="far fa-calendar-alt"></i> ${cert.date}</small>
+                </div>
+                <div class="cert-actions">
+                    <button class="action-btn delete-btn" onclick="deleteCert(${idx})">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>`;
+                list.appendChild(div);
+            });
+        }
+
+        async function deleteCert(idx) {
+            if (!confirm('Delete this certificate? It will be removed for everyone.')) return;
+            const certs = await cloudRead();
+            certs.splice(idx, 1);
+            await cloudWrite(certs);
+            await renderList();
+            showToast('Certificate deleted from all devices.');
+        }
+
+        // ── Lightbox ─────────────────────────────────────────────
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+
+        function openLightbox(src) {
+            lbImg.src = src;
+            lightbox.classList.add('active');
+        }
+
+        document.getElementById('lbClose').addEventListener('click', () => lightbox.classList.remove('active'));
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('active'); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('active'); });
+
+        // ── Init ─────────────────────────────────────────────────
+        renderList();
+    </script>
+</body>
+
+</html>
+

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Dipendra Timalsina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a192f;
+            --teal: #64ffda;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: var(--navy);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--teal);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--teal);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* ── BANNER ── */
+        .page-banner {
+            background: var(--navy);
+            padding: 50px 8% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .page-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .banner-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-banner h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .page-banner h2 span {
+            color: var(--teal);
+        }
+
+        .page-banner p {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        /* ── MAIN LAYOUT ── */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 5% 80px;
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 36px;
+            align-items: start;
+        }
+
+        /* ── INFO PANEL ── */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-panel .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .info-panel .panel-sub {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-bottom: 8px;
+        }
+
+        /* info cards */
+        .info-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-card:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .info-card:nth-child(3) {
+            animation-delay: 0.10s;
+        }
+
+        .info-card:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+
+        .info-card:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon i {
+            color: var(--teal);
+            font-size: 16px;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-content .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 3px;
+        }
+
+        .info-content .value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            line-height: 1.5;
+        }
+
+        .info-content .value a {
+            color: var(--navy);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .info-content .value a:hover {
+            color: var(--teal);
+        }
+
+        /* social row */
+        .social-row {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e2e8f0;
+            animation: fadeUp 0.5s 0.25s ease both;
+        }
+
+        .social-row .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--teal);
+            font-size: 17px;
+            text-decoration: none;
+            transition: transform 0.25s, background 0.25s;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px) scale(1.08);
+            background: #0f2a4a;
+        }
+
+        /* availability badge */
+        .avail-badge {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 16px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeUp 0.5s 0.3s ease both;
+        }
+
+        .avail-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.08);
+            }
+        }
+
+        .avail-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .avail-text span {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 12px;
+            display: block;
+        }
+
+        /* ── FORM PANEL ── */
+        .form-panel {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 36px 36px 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.09);
+            border: 1px solid #e2e8f0;
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
+
+        .form-panel .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .form-panel .form-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 28px;
+        }
+
+        /* floating label inputs */
+        .field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 16px 16px 10px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            resize: none;
+        }
+
+        .field textarea {
+            padding-top: 20px;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.15);
+        }
+
+        .field label {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            font-size: 13px;
+            color: var(--muted);
+            pointer-events: none;
+            transition: 0.2s ease;
+            background: white;
+            padding: 0 2px;
+        }
+
+        .field input:focus~label,
+        .field input:not(:placeholder-shown)~label,
+        .field textarea:focus~label,
+        .field textarea:not(:placeholder-shown)~label {
+            top: -8px;
+            font-size: 11px;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* row of two fields */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--navy);
+            color: white;
+            border: 2px solid var(--navy);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+            margin-top: 4px;
+        }
+
+        .submit-btn:hover {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: var(--navy);
+        }
+
+        .submit-btn i {
+            transition: transform 0.3s;
+        }
+
+        .submit-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        /* success message */
+        #success-msg {
+            display: none;
+            margin-top: 16px;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            animation: fadeUp 0.3s ease;
+        }
+
+        #success-msg i {
+            margin-right: 6px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 30px 8%;
+        }
+
+        .footer-icons {
+            margin-bottom: 12px;
+        }
+
+        .footer-icons a {
+            color: #94a3b8;
+            margin: 0 12px;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+
+        .footer-icons a:hover {
+            color: var(--teal);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media (max-width: 820px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">Dipendra Timalsina</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="projects.html">Projects</a>
+            <a href="education.html">Education</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- BANNER -->
+    <div class="page-banner">
+        <div class="banner-inner">
+            <h2>Contact <span>Me</span></h2>
+            <p>Have a project or opportunity? Let's connect.</p>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- LEFT: INFO PANEL -->
+        <div class="info-panel">
+            <div>
+                <p class="panel-title">Let's work together</p>
+                <p class="panel-sub">I'm open to freelance projects, full-time roles, and exciting collaborations. Reach
+                    out any time.</p>
+            </div>
+
+            <!-- availability -->
+            <div class="avail-badge">
+                <div class="avail-dot"></div>
+                <div class="avail-text">
+                    Available for work
+                    <span>Actively looking for new opportunities</span>
+                </div>
+            </div>
+
+            <!-- email -->
+            <div class="info-card">
+                <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                <div class="info-content">
+                    <div class="label">Email</div>
+                    <div class="value">
+                        <a href="mailto:timalsinadipendra125@gmail.com">timalsinadipendra125@gmail.com</a><br>
+                        <a href="mailto:itsdipendra72@gmail.com">itsdipendra72@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- phone -->
+            <div class="info-card">
+                <div class="info-icon"><i class="fas fa-phone"></i></div>
+                <div class="info-content">
+                    <div class="label">Phone</div>
+                    <div class="value"><a href="tel:+9779842418043">+977 9842418043</a></div>
+                </div>
+            </div>
+
+            <!-- location -->
+            <div class="info-card">
+                <div class="info-icon"><i class="fas fa-location-dot"></i></div>
+                <div class="info-content">
+                    <div class="label">Location</div>
+                    <div class="value">Kathmandu, Nepal</div>
+                </div>
+            </div>
+
+            <!-- response time -->
+            <div class="info-card">
+                <div class="info-icon"><i class="fas fa-clock"></i></div>
+                <div class="info-content">
+                    <div class="label">Response Time</div>
+                    <div class="value">Usually within 24 hours</div>
+                </div>
+            </div>
+
+            <!-- social -->
+            <div class="social-row">
+                <div class="label">Find me on</div>
+                <div class="social-links">
+                    <a class="social-link" href="https://www.linkedin.com/in/dipendra-timalsina-24776725a/"
+                        target="_blank" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a class="social-link" href="https://github.com/dipendra1186" target="_blank" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a class="social-link" href="https://www.instagram.com/its_dipendra7/" target="_blank"
+                        title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: FORM PANEL -->
+        <div class="form-panel">
+            <p class="form-title">Send a Message</p>
+            <p class="form-sub">Fill out the form below and I'll get back to you as soon as possible.</p>
+
+            <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="eea16d4b-1a7d-4088-90e8-8b4c19b5b24f">
+                <input type="hidden" id="replyToInput" name="replyto">
+
+                <div class="field-row">
+                    <div class="field">
+                        <input type="text" name="name" id="name" placeholder=" " required>
+                        <label for="name">Your Name</label>
+                    </div>
+                    <div class="field">
+                        <input type="email" name="email" id="email" placeholder=" " required>
+                        <label for="email">Your Email</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <input type="text" name="subject" id="subject" placeholder=" " required>
+                    <label for="subject">Subject</label>
+                </div>
+
+                <div class="field">
+                    <textarea name="message" id="message" placeholder=" " rows="6" required></textarea>
+                    <label for="message">Your Message</label>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Send Message <i class="fas fa-paper-plane"></i>
+                </button>
+                <div id="success-msg">
+                    <i class="fas fa-circle-check"></i> Message sent successfully! I'll be in touch soon.
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-icons">
+            <a href="https://www.linkedin.com/in/dipendra-timalsina-24776725a/" target="_blank"><i
+                    class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/dipendra1186" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/its_dipendra7/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2026 Dipendra Timalsina | Kathmandu, Nepal</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('contactForm');
+        const replyInput = document.getElementById('replyToInput');
+        const successMsg = document.getElementById('success-msg');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            replyInput.value = form.querySelector('input[name="email"]').value;
+
+            const btn = form.querySelector('.submit-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+            btn.disabled = true;
+
+            fetch(form.action, { method: 'POST', body: new FormData(form) })
+                .then(res => {
+                    if (res.ok) {
+                        form.reset();
+                        successMsg.style.display = 'block';
+                        setTimeout(() => { successMsg.style.display = 'none'; }, 4000);
+                    } else {
+                        alert('Error sending message. Please try again.');
+                    }
+                })
+                .catch(err => alert('Error: ' + err.message))
+                .finally(() => {
+                    btn.innerHTML = 'Send Message <i class="fas fa-paper-plane"></i>';
+                    btn.disabled = false;
+                });
+        });
+    </script>
+</body>
+
+</html>

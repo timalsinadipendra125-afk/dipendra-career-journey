@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates | Dipendra Timalsina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0a192f;
+            --teal: #64ffda;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: var(--navy);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--teal);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--teal);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+        /* BANNER */
+        .page-banner {
+            background: var(--navy);
+            padding: 50px 8% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(100, 255, 218, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 255, 218, 0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .page-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: var(--bg);
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .banner-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-banner h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .page-banner h2 span {
+            color: var(--teal);
+        }
+
+        .page-banner p {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        /* Loading skeleton */
+        .loading-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .load-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--teal);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* MAIN */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 5%;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.12);
+        }
+
+        .cert-total {
+            background: var(--navy);
+            color: var(--teal);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* GRID */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 28px;
+        }
+
+        /* CARD */
+        .cert-card {
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            display: flex;
+            flex-direction: column;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.13);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-images {
+            position: relative;
+            background: #f1f5f9;
+            overflow: hidden;
+            height: 180px;
+        }
+
+        .card-images.single img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+            transition: transform 0.4s ease;
+        }
+
+        .cert-card:hover .card-images.single img {
+            transform: scale(1.06);
+        }
+
+        .card-images.multi {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .card-images.multi::-webkit-scrollbar {
+            display: none;
+        }
+
+        .card-images.multi img {
+            flex-shrink: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f1f5f9;
+            padding: 8px;
+            scroll-snap-align: start;
+        }
+
+        .img-count-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(10, 25, 47, 0.75);
+            color: var(--teal);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .card-body {
+            padding: 18px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .card-body p {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.55;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-date {
+            font-size: 11px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-btn {
+            font-size: 12px;
+            color: var(--navy);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f0fdf4;
+            padding: 5px 12px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .cert-card:hover .view-btn {
+            background: var(--teal);
+            color: var(--navy);
+        }
+
+        /* Empty */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--muted);
+        }
+
+        .empty-state a {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 10px 24px;
+            background: var(--teal);
+            color: var(--navy);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* LIGHTBOX */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.93);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 20px;
+        }
+
+        #lightbox.active {
+            display: flex;
+        }
+
+        .lb-wrapper {
+            position: relative;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #lbImg {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            object-fit: contain;
+        }
+
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .lb-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .lb-prev {
+            left: -55px;
+        }
+
+        .lb-next {
+            right: -55px;
+        }
+
+        .lb-nav.hidden {
+            display: none;
+        }
+
+        .lb-counter {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .lb-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .lb-close {
+            position: absolute;
+            top: 18px;
+            right: 28px;
+            font-size: 34px;
+            color: white;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+            line-height: 1;
+        }
+
+        .lb-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            padding: 30px 8%;
+            margin-top: 60px;
+        }
+
+        .social-icons {
+            margin-bottom: 12px;
+        }
+
+        .social-icons a {
+            color: #94a3b8;
+            margin: 0 12px;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--teal);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        @media(max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+
+            .lb-prev {
+                left: -40px;
+            }
+
+            .lb-next {
+                right: -40px;
+            }
+        }
+
+        @media(max-width: 480px) {
+
+            .lb-prev,
+            .lb-next {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">Dipendra Timalsina</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="projects.html">Projects</a>
+            <a href="education.html">Education</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="page-banner">
+        <div class="banner-inner">
+            <h2>My <span>Certificates</span></h2>
+            <p>Professional certifications and achievements</p>
+        </div>
+    </div>
+
+    <main>
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search certificates…">
+            </div>
+            <div class="cert-total" id="certTotal">Loading…</div>
+        </div>
+
+        <div class="cert-grid" id="cert-grid">
+            <div class="loading-state">
+                <div class="load-spinner"></div>
+                <span>Loading certificates…</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox">
+        <span class="lb-close" id="lbClose">&times;</span>
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-wrapper">
+            <button class="lb-nav lb-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+            <img id="lbImg" src="" alt="Certificate">
+            <button class="lb-nav lb-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="lb-counter" id="lbCounter"></div>
+    </div>
+
+    <footer>
+        <div class="social-icons">
+            <a href="https://www.linkedin.com/in/dipendra-timalsina-24776725a/" target="_blank"><i
+                    class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/dipendra1186" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/its_dipendra7/" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2026 Dipendra Timalsina | Kathmandu, Nepal</p>
+    </footer>
+
+    <script>
+        // ════════════════════════════════════════════════════════
+        //  ⚙️  PASTE THE SAME CREDENTIALS AS manage-certificates.html
+        // ════════════════════════════════════════════════════════
+        const JSONBIN_ID = '69a14525ae596e708f4e8801';   // e.g. '66a1b2c3d4e5f67890abcdef'
+        const JSONBIN_KEY = '$2a$10$RJ9Llpn50qdjpUo5XO.2guOaGDxTrxUPkcX2747BCRhmCBwCmgXYG';
+
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+        const CONFIGURED = JSONBIN_ID !== 'YOUR_BIN_ID_HERE' && JSONBIN_KEY !== 'YOUR_MASTER_KEY_HERE';
+
+        // ── Fetch certs from cloud (fallback: localStorage) ──────
+        async function fetchCerts() {
+            if (!CONFIGURED) {
+                return JSON.parse(localStorage.getItem('certificates')) || [];
+            }
+            try {
+                const res = await fetch(JSONBIN_URL + '/latest', {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+                const data = await res.json();
+                const certs = Array.isArray(data.record) ? data.record : [];
+                localStorage.setItem('certificates', JSON.stringify(certs)); // local cache
+                return certs;
+            } catch (e) {
+                // cloud unavailable — serve local cache silently
+                return JSON.parse(localStorage.getItem('certificates')) || [];
+            }
+        }
+
+        // ── Lightbox ──────────────────────────────────────────────
+        let lbImages = [], lbIndex = 0;
+
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+        const lbTitle = document.getElementById('lbTitle');
+        const lbCounter = document.getElementById('lbCounter');
+        const lbPrev = document.getElementById('lbPrev');
+        const lbNext = document.getElementById('lbNext');
+
+        function openLightbox(images, startIndex, title) {
+            lbImages = images; lbIndex = startIndex;
+            lbTitle.textContent = title;
+            updateLb();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateLb() {
+            lbImg.src = lbImages[lbIndex];
+            lbCounter.textContent = lbImages.length > 1 ? `${lbIndex + 1} / ${lbImages.length}` : '';
+            lbPrev.classList.toggle('hidden', lbImages.length <= 1 || lbIndex === 0);
+            lbNext.classList.toggle('hidden', lbImages.length <= 1 || lbIndex === lbImages.length - 1);
+        }
+
+        function closeLb() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+
+        document.getElementById('lbClose').addEventListener('click', closeLb);
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLb(); });
+        lbPrev.addEventListener('click', e => { e.stopPropagation(); lbIndex--; updateLb(); });
+        lbNext.addEventListener('click', e => { e.stopPropagation(); lbIndex++; updateLb(); });
+        document.addEventListener('keydown', e => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLb();
+            if (e.key === 'ArrowLeft' && lbIndex > 0) { lbIndex--; updateLb(); }
+            if (e.key === 'ArrowRight' && lbIndex < lbImages.length - 1) { lbIndex++; updateLb(); }
+        });
+
+        // ── Render grid ───────────────────────────────────────────
+        let allCerts = [];
+
+        function renderGrid(certs) {
+            const grid = document.getElementById('cert-grid');
+            grid.innerHTML = '';
+            document.getElementById('certTotal').textContent =
+                `${certs.length} certificate${certs.length !== 1 ? 's' : ''}`;
+
+            if (certs.length === 0) {
+                grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-certificate"></i>
+                    <h3>No Certificates Yet</h3>
+                    <p>Check back soon!</p>
+                </div>`;
+                return;
+            }
+
+            certs.forEach((cert, i) => {
+                const images = cert.images?.length ? cert.images
+                    : cert.image ? [cert.image] : [];
+                if (!images.length) return;
+
+                const isMulti = images.length > 1;
+                const imgHTML = images.map((url, j) =>
+                    `<img src="${url}" alt="${cert.subject} ${j + 1}" loading="lazy">`
+                ).join('');
+
+                const card = document.createElement('div');
+                card.className = 'cert-card';
+                card.style.animationDelay = `${i * 0.06}s`;
+                card.innerHTML = `
+                <div class="card-images ${isMulti ? 'multi' : 'single'}">
+                    ${imgHTML}
+                    ${isMulti ? `<span class="img-count-badge"><i class="fas fa-images"></i> ${images.length}</span>` : ''}
+                </div>
+                <div class="card-body">
+                    <h3>${cert.subject}</h3>
+                    <p>${cert.description}</p>
+                    <div class="card-footer">
+                        <span class="card-date"><i class="far fa-calendar-alt"></i> ${cert.date || ''}</span>
+                        <span class="view-btn"><i class="fas fa-expand-alt"></i> View</span>
+                    </div>
+                </div>`;
+
+                card.addEventListener('click', () => openLightbox(images, 0, cert.subject));
+                grid.appendChild(card);
+            });
+        }
+
+        // ── Search ────────────────────────────────────────────────
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            renderGrid(q ? allCerts.filter(c =>
+                c.subject.toLowerCase().includes(q) ||
+                c.description.toLowerCase().includes(q)
+            ) : allCerts);
+        });
+
+        // ── Init ──────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', async () => {
+            allCerts = await fetchCerts();
+            renderGrid(allCerts);
+        });
+    </script>
+</body>
+
+</html>
+
