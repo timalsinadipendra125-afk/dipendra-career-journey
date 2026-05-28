@@ -7,6 +7,8 @@
     <title>Manage Certificates | Dipendra Timalsina</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF.js for client-side PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         :root {
             --navy: #0a192f;
@@ -19,6 +21,8 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --pdf-color: #e53935;
+            --pdf-light: #ffebee;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,16 +34,10 @@
             min-height: 100vh;
         }
 
-        /* ── HEADER ── */
         header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 8%;
-            background: var(--navy);
+            position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 8%; background: var(--navy);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
         }
         .logo { font-size: 22px; font-weight: 700; color: var(--teal); }
@@ -54,7 +52,6 @@
         nav a:hover { color: var(--teal); }
         nav a:hover::after { width: 100%; }
 
-        /* ── SETUP BANNER ── */
         .setup-banner {
             background: #fffbeb; border: 1.5px solid #fcd34d;
             border-radius: 12px; padding: 20px 24px;
@@ -72,13 +69,11 @@
             border-radius: 4px; font-family: monospace; font-size: 12px;
         }
 
-        /* ── PAGE WRAPPER ── */
         .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 50px 5%; }
         .page-title { text-align: center; margin-bottom: 40px; }
         .page-title h2 { font-size: 30px; font-weight: 700; color: var(--navy); }
         .page-title p { color: var(--muted); margin-top: 6px; font-size: 14px; }
 
-        /* Sync bar */
         .sync-bar {
             display: flex; align-items: center; gap: 10px;
             padding: 10px 16px; border-radius: 8px; font-size: 13px;
@@ -90,7 +85,6 @@
         .sync-bar.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-        /* ── FORM CARD ── */
         .form-card {
             background: var(--card); border-radius: 16px; padding: 36px;
             box-shadow: var(--shadow); max-width: 640px;
@@ -115,6 +109,7 @@
         }
         textarea { resize: vertical; min-height: 80px; }
 
+        /* ── DROP ZONE (supports PDF + images) ── */
         .drop-zone {
             border: 2px dashed #cbd5e1; border-radius: 10px;
             padding: 28px; text-align: center; cursor: pointer;
@@ -128,10 +123,56 @@
         .drop-zone p { font-size: 13px; color: var(--muted); }
         .drop-zone span { color: var(--navy); font-weight: 600; }
 
+        /* PDF badge pill on drop zone */
+        .drop-zone-badges {
+            display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px;
+        }
+        .badge {
+            font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.5px;
+        }
+        .badge-img { background: #dbeafe; color: #1d4ed8; }
+        .badge-pdf { background: var(--pdf-light); color: var(--pdf-color); }
+
+        /* Preview items */
         .image-preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+        /* Image preview thumb */
+        .preview-item { position: relative; }
         .preview-item img {
             width: 80px; height: 55px; object-fit: cover;
             border-radius: 8px; border: 2px solid #e2e8f0;
+        }
+
+        /* PDF preview thumb */
+        .preview-pdf-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; position: relative;
+        }
+        .preview-pdf-thumb {
+            width: 80px; height: 55px; background: var(--pdf-light);
+            border-radius: 8px; border: 2px solid #fca5a5;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 2px;
+        }
+        .preview-pdf-thumb i { font-size: 22px; color: var(--pdf-color); }
+        .preview-pdf-thumb span { font-size: 9px; color: var(--pdf-color); font-weight: 700; }
+        .preview-pdf-name {
+            font-size: 10px; color: var(--muted); max-width: 80px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+        }
+
+        /* PDF processing status */
+        .pdf-processing-note {
+            display: none; align-items: center; gap: 8px;
+            padding: 10px 14px; background: #fff7ed;
+            border: 1px solid #fed7aa; border-radius: 8px;
+            font-size: 12px; color: #9a3412; margin-top: 10px;
+        }
+        .pdf-processing-note.active { display: flex; }
+        .spinner-small {
+            width: 14px; height: 14px; border: 2px solid #fed7aa;
+            border-top-color: #ea580c; border-radius: 50%;
+            animation: spin 0.8s linear infinite; flex-shrink: 0;
         }
 
         .btn-submit {
@@ -159,7 +200,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Toast */
         .toast {
             position: fixed; bottom: 30px; right: 30px;
             background: var(--navy); color: white;
@@ -173,7 +213,6 @@
         .toast.success i { color: var(--teal); }
         .toast.error i { color: #f87171; }
 
-        /* List */
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .list-header h3 { font-size: 20px; font-weight: 700; color: var(--navy); }
         .cert-count {
@@ -205,6 +244,19 @@
         }
         .cert-images img:hover { border-color: var(--teal); transform: scale(1.05); }
 
+        /* PDF attachment card in cert list */
+        .cert-pdf-thumb {
+            width: 70px; height: 48px; background: var(--pdf-light);
+            border-radius: 7px; border: 2px solid #fca5a5;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 2px;
+            cursor: pointer; transition: 0.2s; text-decoration: none;
+            flex-shrink: 0;
+        }
+        .cert-pdf-thumb:hover { border-color: var(--pdf-color); transform: scale(1.05); }
+        .cert-pdf-thumb i { font-size: 18px; color: var(--pdf-color); }
+        .cert-pdf-thumb span { font-size: 8px; color: var(--pdf-color); font-weight: 700; letter-spacing: 0.5px; }
+
         .cert-info { flex: 1; min-width: 0; }
         .cert-info h4 {
             font-size: 15px; font-weight: 600; color: var(--navy);
@@ -219,6 +271,14 @@
             font-size: 11px; color: #94a3b8;
             display: flex; align-items: center; gap: 4px; margin-top: 5px;
         }
+        /* PDF tag next to date */
+        .has-pdf-tag {
+            display: inline-flex; align-items: center; gap: 3px;
+            background: var(--pdf-light); color: var(--pdf-color);
+            font-size: 10px; font-weight: 700; padding: 2px 7px;
+            border-radius: 20px; margin-left: 6px;
+        }
+
         .cert-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .action-btn {
             padding: 7px 14px; border: none; border-radius: 7px;
@@ -234,11 +294,9 @@
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(10, 25, 47, 0.75);
             display: none; align-items: center; justify-content: center;
-            z-index: 10000; padding: 20px;
-            backdrop-filter: blur(4px);
+            z-index: 10000; padding: 20px; backdrop-filter: blur(4px);
         }
         .modal-overlay.active { display: flex; }
-
         .modal {
             background: white; border-radius: 20px; width: 100%;
             max-width: 600px; max-height: 90vh; overflow-y: auto;
@@ -246,12 +304,11 @@
             animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
         .modal-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 28px 0; position: sticky; top: 0;
+            padding: 24px 28px 18px; position: sticky; top: 0;
             background: white; border-radius: 20px 20px 0 0; z-index: 1;
-            padding-bottom: 18px; border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
         .modal-header h3 {
             font-size: 18px; font-weight: 700; color: var(--navy);
@@ -265,23 +322,16 @@
             font-size: 18px; color: #64748b; transition: 0.2s;
         }
         .modal-close:hover { background: #fee2e2; color: var(--danger); }
-
         .modal-body { padding: 24px 28px; }
 
-        /* Existing images editor inside modal */
         .existing-images-label {
             font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 10px; display: block;
         }
-        .existing-images-grid {
-            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
-        }
-        .existing-img-wrap {
-            position: relative; display: inline-block;
-        }
+        .existing-images-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+        .existing-img-wrap { position: relative; display: inline-block; }
         .existing-img-wrap img {
             width: 90px; height: 62px; object-fit: cover;
-            border-radius: 8px; border: 2px solid #e2e8f0;
-            display: block;
+            border-radius: 8px; border: 2px solid #e2e8f0; display: block;
         }
         .existing-img-wrap .remove-img-btn {
             position: absolute; top: -8px; right: -8px;
@@ -292,12 +342,34 @@
             transition: 0.2s; line-height: 1;
         }
         .existing-img-wrap .remove-img-btn:hover { background: #b91c1c; transform: scale(1.15); }
+
+        /* PDF thumb in modal existing list */
+        .existing-pdf-wrap { position: relative; display: inline-block; }
+        .existing-pdf-card {
+            width: 90px; height: 62px; background: var(--pdf-light);
+            border-radius: 8px; border: 2px solid #fca5a5;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 3px;
+            cursor: pointer; text-decoration: none;
+        }
+        .existing-pdf-card:hover { border-color: var(--pdf-color); }
+        .existing-pdf-card i { font-size: 22px; color: var(--pdf-color); }
+        .existing-pdf-card span { font-size: 9px; color: var(--pdf-color); font-weight: 700; }
+        .existing-pdf-wrap .remove-img-btn {
+            position: absolute; top: -8px; right: -8px;
+            width: 22px; height: 22px; background: var(--danger);
+            color: white; border: 2px solid white; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 11px; font-weight: 700;
+            transition: 0.2s; line-height: 1;
+        }
+        .existing-pdf-wrap .remove-img-btn:hover { background: #b91c1c; transform: scale(1.15); }
+
         .no-images-note {
             font-size: 13px; color: var(--muted); font-style: italic;
             margin-bottom: 12px; padding: 10px 14px;
             background: #f8fafc; border-radius: 8px; border: 1px dashed #e2e8f0;
         }
-
         .add-more-label {
             font-size: 13px; font-weight: 600; color: var(--navy);
             margin-bottom: 8px; display: block; margin-top: 16px;
@@ -338,6 +410,51 @@
             animation: spin 0.8s linear infinite; flex-shrink: 0;
         }
 
+        /* ── PDF VIEWER MODAL ── */
+        .pdf-viewer-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+            display: none; align-items: center; justify-content: center;
+            z-index: 99998; padding: 20px; flex-direction: column; gap: 16px;
+        }
+        .pdf-viewer-overlay.active { display: flex; }
+        .pdf-viewer-header {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; max-width: 900px;
+        }
+        .pdf-viewer-header span {
+            color: white; font-size: 14px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pdf-viewer-header span i { color: var(--pdf-color); }
+        .pdf-viewer-controls { display: flex; align-items: center; gap: 10px; }
+        .pdf-nav-btn {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            color: white; padding: 6px 14px; border-radius: 7px; cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .pdf-nav-btn:hover { background: rgba(255,255,255,0.25); }
+        .pdf-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .pdf-page-info { color: #94a3b8; font-size: 13px; min-width: 80px; text-align: center; }
+        .pdf-open-btn {
+            background: var(--pdf-color); border: none;
+            color: white; padding: 6px 14px; border-radius: 7px; cursor: pointer;
+            font-size: 13px; font-weight: 600; text-decoration: none;
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
+        }
+        .pdf-open-btn:hover { background: #c62828; }
+        .pdf-close-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+            font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .pdf-close-btn:hover { background: rgba(239,68,68,0.4); }
+        #pdfCanvas {
+            max-width: 100%; max-height: calc(90vh - 80px);
+            border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background: white;
+        }
+
         /* Lightbox */
         #lightbox {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
@@ -361,6 +478,7 @@
             .cert-item { flex-direction: column; align-items: flex-start; }
             .cert-actions { width: 100%; justify-content: flex-end; }
             .modal { max-height: 95vh; }
+            .pdf-viewer-header { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
@@ -383,7 +501,7 @@
 
         <div class="page-title">
             <h2>Manage Certificates</h2>
-            <p>Add, edit or delete certificates. Changes sync to all devices instantly.</p>
+            <p>Add, edit or delete certificates. Supports images &amp; PDF files. Changes sync to all devices instantly.</p>
         </div>
 
         <div class="setup-banner" id="setupBanner">
@@ -393,7 +511,7 @@
                 <li>Click <strong>+ Create Bin</strong> → paste <code>[]</code> as content → Save</li>
                 <li>Copy the <strong>BIN ID</strong> (looks like: <code>66a1b2c3d4e5f6...</code>)</li>
                 <li>Go to <strong>API Keys</strong> tab → copy your <strong>X-Master-Key</strong></li>
-                <li>Open this file → find <code>JSONBIN_ID</code> and <code>JSONBIN_KEY</code> at the top of the &lt;script&gt; and paste your values</li>
+                <li>Open this file → find <code>JSONBIN_ID</code> and <code>JSONBIN_KEY</code> and paste your values</li>
             </ol>
         </div>
 
@@ -408,7 +526,7 @@
 
             <div class="upload-status" id="uploadStatus">
                 <div class="spinner"></div>
-                <span id="uploadMsg">Uploading images to Cloudinary…</span>
+                <span id="uploadMsg">Uploading…</span>
             </div>
 
             <form id="cert-form" novalidate>
@@ -418,12 +536,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Certificate Image(s) *</label>
+                    <label>Certificate File(s) *</label>
                     <div class="drop-zone" id="dropZone">
-                        <input type="file" id="image" accept="image/*" multiple required>
+                        <input type="file" id="image" accept="image/*,application/pdf" multiple required>
                         <i class="fas fa-cloud-upload-alt"></i>
                         <p><span>Click to upload</span> or drag &amp; drop</p>
-                        <p>PNG, JPG, JPEG — multiple allowed</p>
+                        <div class="drop-zone-badges">
+                            <span class="badge badge-img"><i class="fas fa-image"></i> PNG / JPG</span>
+                            <span class="badge badge-pdf"><i class="fas fa-file-pdf"></i> PDF</span>
+                        </div>
+                    </div>
+                    <div class="pdf-processing-note" id="pdfProcessingNote">
+                        <div class="spinner-small"></div>
+                        <span id="pdfProcessingMsg">Rendering PDF pages as high-res images…</span>
                     </div>
                     <div class="image-preview" id="preview"></div>
                 </div>
@@ -463,7 +588,7 @@
             <div class="modal-body">
                 <div class="modal-upload-status" id="modalUploadStatus">
                     <div class="spinner-amber"></div>
-                    <span id="modalUploadMsg">Uploading new images…</span>
+                    <span id="modalUploadMsg">Uploading new files…</span>
                 </div>
 
                 <div class="form-group">
@@ -473,7 +598,7 @@
 
                 <div class="form-group">
                     <label>Short Description *</label>
-                    <textarea id="edit-description" placeholder="Brief description of this certificate…" required></textarea>
+                    <textarea id="edit-description" placeholder="Brief description…" required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -481,25 +606,31 @@
                     <input type="date" id="edit-date" required>
                 </div>
 
-                <!-- Current images with individual remove buttons -->
                 <div class="form-group">
                     <span class="existing-images-label">
                         <i class="fas fa-images" style="color: var(--teal-dim); margin-right: 6px;"></i>
-                        Current Images
+                        Current Files
                         <span style="font-size:11px; font-weight:400; color:var(--muted); margin-left:6px;">(click × to remove)</span>
                     </span>
                     <div class="existing-images-grid" id="editExistingImages"></div>
 
                     <span class="add-more-label">
                         <i class="fas fa-plus" style="color: var(--teal-dim); margin-right: 6px;"></i>
-                        Add More / Replace Images
+                        Add More / Replace Files
                         <span style="font-size:11px; font-weight:400; color:var(--muted); margin-left:4px;">(optional)</span>
                     </span>
                     <div class="drop-zone" id="editDropZone">
-                        <input type="file" id="edit-image" accept="image/*" multiple>
+                        <input type="file" id="edit-image" accept="image/*,application/pdf" multiple>
                         <i class="fas fa-cloud-upload-alt"></i>
                         <p><span>Click to upload</span> or drag &amp; drop</p>
-                        <p>PNG, JPG, JPEG — multiple allowed</p>
+                        <div class="drop-zone-badges">
+                            <span class="badge badge-img"><i class="fas fa-image"></i> PNG / JPG</span>
+                            <span class="badge badge-pdf"><i class="fas fa-file-pdf"></i> PDF</span>
+                        </div>
+                    </div>
+                    <div class="pdf-processing-note" id="editPdfProcessingNote">
+                        <div class="spinner-small"></div>
+                        <span id="editPdfProcessingMsg">Rendering PDF pages…</span>
                     </div>
                     <div class="image-preview" id="editPreview"></div>
                 </div>
@@ -514,7 +645,24 @@
         </div>
     </div>
 
-    <!-- Lightbox -->
+    <!-- ── PDF VIEWER MODAL ── -->
+    <div class="pdf-viewer-overlay" id="pdfViewer">
+        <div class="pdf-viewer-header">
+            <span id="pdfViewerTitle"><i class="fas fa-file-pdf"></i> Certificate PDF</span>
+            <div class="pdf-viewer-controls">
+                <button class="pdf-nav-btn" id="pdfPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                <span class="pdf-page-info" id="pdfPageInfo">Page 1 / 1</span>
+                <button class="pdf-nav-btn" id="pdfNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                <a href="#" class="pdf-open-btn" id="pdfOpenLink" target="_blank" rel="noopener">
+                    <i class="fas fa-external-link-alt"></i> Open
+                </a>
+                <button class="pdf-close-btn" id="pdfCloseBtn">&#x2715;</button>
+            </div>
+        </div>
+        <canvas id="pdfCanvas"></canvas>
+    </div>
+
+    <!-- Image Lightbox -->
     <div id="lightbox">
         <span class="lb-close" id="lbClose">&times;</span>
         <img id="lbImg" src="" alt="Certificate preview">
@@ -530,13 +678,17 @@
         // ════════════════════════════════════════════════════════
         //  ⚙️  PASTE YOUR CREDENTIALS HERE
         // ════════════════════════════════════════════════════════
-        const JSONBIN_ID  = '69a14525ae596e708f4e8801';
-        const JSONBIN_KEY = '$2a$10$RJ9Llpn50qdjpUo5XO.2guOaGDxTrxUPkcX2747BCRhmCBwCmgXYG';
+        const JSONBIN_ID    = '69a14525ae596e708f4e8801';
+        const JSONBIN_KEY   = '$2a$10$RJ9Llpn50qdjpUo5XO.2guOaGDxTrxUPkcX2747BCRhmCBwCmgXYG';
         const CLOUD_NAME    = 'dheesdhyx';
         const UPLOAD_PRESET = 'Certificates';
 
         const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
         const CONFIGURED  = JSONBIN_ID !== 'YOUR_BIN_ID_HERE' && JSONBIN_KEY !== 'YOUR_MASTER_KEY_HERE';
+
+        // PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         if (!CONFIGURED) {
             document.getElementById('setupBanner').classList.add('show');
@@ -593,38 +745,143 @@
         }
 
         // ── Cloudinary upload ────────────────────────────────────
-        async function uploadToCloudinary(file) {
+        async function uploadToCloudinary(fileOrBlob, resourceType = 'image', fileName = null) {
             const fd = new FormData();
-            fd.append('file', file);
+            if (fileName) {
+                fd.append('file', fileOrBlob, fileName);
+            } else {
+                fd.append('file', fileOrBlob);
+            }
             fd.append('upload_preset', UPLOAD_PRESET);
             fd.append('folder', 'certificates');
-            const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: 'POST', body: fd });
+
+            const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`;
+            const res  = await fetch(endpoint, { method: 'POST', body: fd });
             const data = await res.json();
             if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
             return data.secure_url;
         }
 
-        // ── ADD FORM: drag & drop preview ────────────────────────
-        const imageInput = document.getElementById('image');
-        const preview    = document.getElementById('preview');
-        const dropZone   = document.getElementById('dropZone');
+        // ── PDF → High-Res Images (all pages) ───────────────────
+        /**
+         * Renders each page of a PDF to a PNG Blob at 2× scale (≈ 150 DPI equivalent).
+         * Returns: Array of { blob, name }
+         */
+        async function pdfToImageBlobs(file, scale = 2.5) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc      = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const blobs       = [];
 
-        imageInput.addEventListener('change', handleFiles);
+            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                const page     = await pdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale });
+                const canvas   = document.createElement('canvas');
+                canvas.width   = viewport.width;
+                canvas.height  = viewport.height;
+                const ctx      = canvas.getContext('2d');
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 0.95));
+                blobs.push({ blob, name: `${file.name}_page${pageNum}.png` });
+            }
+            return blobs;
+        }
+
+        // ── File type helper ─────────────────────────────────────
+        function isPDF(file) { return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'); }
+
+        /**
+         * Processes an array of File objects:
+         *   - Images → returned as-is
+         *   - PDFs   → rendered to high-res PNG blobs (all pages)
+         * Returns: Array of { file/blob, name, sourceType: 'image'|'pdf', originalPdf? }
+         */
+        async function processFiles(files, onProgress) {
+            const result = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (isPDF(file)) {
+                    if (onProgress) onProgress(`Rendering PDF "${file.name}"…`);
+                    const pageBlobs = await pdfToImageBlobs(file);
+                    pageBlobs.forEach(({ blob, name }) => {
+                        result.push({ blob, name, sourceType: 'pdf', originalName: file.name });
+                    });
+                } else {
+                    result.push({ blob: file, name: file.name, sourceType: 'image' });
+                }
+            }
+            return result;
+        }
+
+        // ── ADD FORM: drag & drop + PDF preview ──────────────────
+        const imageInput       = document.getElementById('image');
+        const preview          = document.getElementById('preview');
+        const dropZone         = document.getElementById('dropZone');
+        const pdfProcessingNote = document.getElementById('pdfProcessingNote');
+        const pdfProcessingMsg  = document.getElementById('pdfProcessingMsg');
+
+        // Stored processed blobs for add form
+        let addFormProcessed = [];
+
+        imageInput.addEventListener('change', () => handleFilesWithPDF(
+            Array.from(imageInput.files), preview, pdfProcessingNote, pdfProcessingMsg,
+            (processed) => { addFormProcessed = processed; }
+        ));
         dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
         dropZone.addEventListener('drop', e => {
             e.preventDefault(); dropZone.classList.remove('dragover');
-            imageInput.files = e.dataTransfer.files; handleFiles();
+            const dt = e.dataTransfer;
+            // Assign to input if possible, else handle directly
+            handleFilesWithPDF(
+                Array.from(dt.files), preview, pdfProcessingNote, pdfProcessingMsg,
+                (processed) => { addFormProcessed = processed; }
+            );
         });
-        function handleFiles() {
-            preview.innerHTML = '';
-            Array.from(imageInput.files).forEach(file => {
-                const img  = document.createElement('img');
-                img.src    = URL.createObjectURL(file);
+
+        async function handleFilesWithPDF(files, previewEl, noteEl, msgEl, onDone) {
+            previewEl.innerHTML = '';
+            if (files.length === 0) return;
+
+            const hasPDF = files.some(isPDF);
+            if (hasPDF) {
+                noteEl.classList.add('active');
+                msgEl.textContent = 'Processing files…';
+            }
+
+            try {
+                const processed = await processFiles(files, (msg) => { msgEl.textContent = msg; });
+                onDone(processed);
+                renderFilePreview(processed, previewEl);
+            } catch (err) {
+                showToast('Error processing file: ' + err.message, 'error');
+            } finally {
+                noteEl.classList.remove('active');
+            }
+        }
+
+        function renderFilePreview(processed, previewEl) {
+            previewEl.innerHTML = '';
+            processed.forEach(item => {
                 const wrap = document.createElement('div');
-                wrap.className = 'preview-item';
-                wrap.appendChild(img);
-                preview.appendChild(wrap);
+                if (item.sourceType === 'pdf') {
+                    // Show a thumbnail of the rendered page
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(item.blob);
+                    wrap.className = 'preview-item';
+                    wrap.appendChild(img);
+                    // Add PDF label overlay
+                    const label = document.createElement('div');
+                    label.style.cssText = 'position:absolute;bottom:2px;right:2px;background:rgba(229,57,53,0.85);color:white;font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;';
+                    label.textContent = 'PDF';
+                    wrap.style.position = 'relative';
+                    wrap.appendChild(label);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(item.blob);
+                    wrap.className = 'preview-item';
+                    wrap.appendChild(img);
+                }
+                previewEl.appendChild(wrap);
             });
         }
 
@@ -639,26 +896,29 @@
             const subject     = document.getElementById('subject').value.trim();
             const description = document.getElementById('description').value.trim();
             const date        = document.getElementById('date').value;
-            const files       = Array.from(imageInput.files);
 
-            if (!subject || !description || !date || files.length === 0) {
-                showToast('Please fill all fields and select at least one image.', 'error'); return;
+            if (!subject || !description || !date || addFormProcessed.length === 0) {
+                showToast('Please fill all fields and select at least one file.', 'error'); return;
             }
 
             submitBtn.disabled = true;
             uploadStatus.classList.add('active');
             try {
                 const urls = [];
-                for (let i = 0; i < files.length; i++) {
-                    uploadMsg.textContent = `Uploading image ${i + 1} of ${files.length}…`;
-                    urls.push(await uploadToCloudinary(files[i]));
+                for (let i = 0; i < addFormProcessed.length; i++) {
+                    const item = addFormProcessed[i];
+                    uploadMsg.textContent = `Uploading file ${i + 1} of ${addFormProcessed.length}…`;
+                    const url = await uploadToCloudinary(item.blob, 'image', item.name);
+                    urls.push(url);
                 }
                 uploadMsg.textContent = 'Saving to cloud…';
                 const certs = await cloudRead();
                 certs.push({ subject, description, date, images: urls });
                 await cloudWrite(certs);
                 await renderList();
-                form.reset(); preview.innerHTML = '';
+                form.reset();
+                preview.innerHTML = '';
+                addFormProcessed = [];
                 showToast('Certificate added and synced to all devices!');
             } catch (err) {
                 showToast('Error: ' + err.message, 'error');
@@ -688,16 +948,27 @@
                 const div = document.createElement('div');
                 div.className = 'cert-item';
 
-                const imgsHTML = (cert.images || []).map(url =>
-                    `<img src="${url}" alt="cert" onclick="openLightbox('${url}')">`
-                ).join('');
+                const imgsHTML = (cert.images || []).map(url => {
+                    // Detect if it's a raw PDF URL (Cloudinary delivers PDFs too)
+                    if (url.toLowerCase().includes('.pdf') || url.toLowerCase().includes('/raw/')) {
+                        return `<a class="cert-pdf-thumb" href="${url}" target="_blank" rel="noopener" title="Open PDF">
+                                    <i class="fas fa-file-pdf"></i><span>PDF</span>
+                                </a>`;
+                    }
+                    return `<img src="${url}" alt="cert" onclick="openLightbox('${url}')">`;
+                }).join('');
+
+                const hasPDF = (cert.images || []).some(u => u.toLowerCase().includes('.pdf'));
 
                 div.innerHTML = `
                 <div class="cert-images">${imgsHTML}</div>
                 <div class="cert-info">
                     <h4>${cert.subject}</h4>
                     <p>${cert.description}</p>
-                    <small><i class="far fa-calendar-alt"></i> ${cert.date}</small>
+                    <small>
+                        <i class="far fa-calendar-alt"></i> ${cert.date}
+                        ${hasPDF ? '<span class="has-pdf-tag"><i class="fas fa-file-pdf"></i> PDF</span>' : ''}
+                    </small>
                 </div>
                 <div class="cert-actions">
                     <button class="action-btn edit-btn" onclick="openEditModal(${idx})">
@@ -721,36 +992,33 @@
         }
 
         // ── EDIT MODAL ───────────────────────────────────────────
-        let editIdx         = -1;
-        let editKeptImages  = [];   // URLs of images the user chose to keep
+        let editIdx        = -1;
+        let editKeptImages = [];
+        let editProcessed  = [];
 
-        const editModal      = document.getElementById('editModal');
-        const editSaveBtn    = document.getElementById('editSaveBtn');
-        const editImageInput = document.getElementById('edit-image');
-        const editPreview    = document.getElementById('editPreview');
-        const editDropZone   = document.getElementById('editDropZone');
-        const modalUpload    = document.getElementById('modalUploadStatus');
-        const modalUploadMsg = document.getElementById('modalUploadMsg');
+        const editModal          = document.getElementById('editModal');
+        const editSaveBtn        = document.getElementById('editSaveBtn');
+        const editImageInput     = document.getElementById('edit-image');
+        const editPreview        = document.getElementById('editPreview');
+        const editDropZone       = document.getElementById('editDropZone');
+        const modalUpload        = document.getElementById('modalUploadStatus');
+        const modalUploadMsg     = document.getElementById('modalUploadMsg');
+        const editPdfNote        = document.getElementById('editPdfProcessingNote');
+        const editPdfMsg         = document.getElementById('editPdfProcessingMsg');
 
-        // Drag & drop for edit modal
-        editImageInput.addEventListener('change', handleEditFiles);
+        editImageInput.addEventListener('change', () => handleFilesWithPDF(
+            Array.from(editImageInput.files), editPreview, editPdfNote, editPdfMsg,
+            (processed) => { editProcessed = processed; }
+        ));
         editDropZone.addEventListener('dragover',  e => { e.preventDefault(); editDropZone.classList.add('dragover'); });
         editDropZone.addEventListener('dragleave', () => editDropZone.classList.remove('dragover'));
         editDropZone.addEventListener('drop', e => {
             e.preventDefault(); editDropZone.classList.remove('dragover');
-            editImageInput.files = e.dataTransfer.files; handleEditFiles();
+            handleFilesWithPDF(
+                Array.from(e.dataTransfer.files), editPreview, editPdfNote, editPdfMsg,
+                (processed) => { editProcessed = processed; }
+            );
         });
-        function handleEditFiles() {
-            editPreview.innerHTML = '';
-            Array.from(editImageInput.files).forEach(file => {
-                const img  = document.createElement('img');
-                img.src    = URL.createObjectURL(file);
-                const wrap = document.createElement('div');
-                wrap.className = 'preview-item';
-                wrap.appendChild(img);
-                editPreview.appendChild(wrap);
-            });
-        }
 
         async function openEditModal(idx) {
             const certs = await cloudRead();
@@ -759,19 +1027,16 @@
 
             editIdx = idx;
             editKeptImages = [...(cert.images || [])];
+            editProcessed  = [];
 
-            // Populate text fields
             document.getElementById('edit-subject').value     = cert.subject     || '';
             document.getElementById('edit-description').value = cert.description || '';
             document.getElementById('edit-date').value        = cert.date        || '';
 
-            // Reset new-image inputs
             editImageInput.value = '';
             editPreview.innerHTML = '';
 
-            // Render existing images with remove buttons
             renderEditExistingImages();
-
             editModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -781,17 +1046,29 @@
             container.innerHTML = '';
 
             if (editKeptImages.length === 0) {
-                container.innerHTML = '<p class="no-images-note"><i class="fas fa-exclamation-circle" style="margin-right:6px;color:#f59e0b;"></i>No images remaining — please add at least one new image below.</p>';
+                container.innerHTML = '<p class="no-images-note"><i class="fas fa-exclamation-circle" style="margin-right:6px;color:#f59e0b;"></i>No files remaining — please add at least one new file below.</p>';
                 return;
             }
 
             editKeptImages.forEach((url, i) => {
-                const wrap = document.createElement('div');
-                wrap.className = 'existing-img-wrap';
-                wrap.innerHTML = `
-                    <img src="${url}" alt="Certificate image ${i + 1}" onclick="openLightbox('${url}')">
-                    <button class="remove-img-btn" onclick="removeExistingImage(${i})" title="Remove this image" aria-label="Remove image">&#x2715;</button>`;
-                container.appendChild(wrap);
+                const isPDFUrl = url.toLowerCase().includes('.pdf') || url.toLowerCase().includes('/raw/');
+                if (isPDFUrl) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'existing-pdf-wrap';
+                    wrap.innerHTML = `
+                        <a class="existing-pdf-card" href="${url}" target="_blank" rel="noopener" title="Open PDF">
+                            <i class="fas fa-file-pdf"></i><span>PDF</span>
+                        </a>
+                        <button class="remove-img-btn" onclick="removeExistingImage(${i})" title="Remove this file" aria-label="Remove PDF">&#x2715;</button>`;
+                    container.appendChild(wrap);
+                } else {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'existing-img-wrap';
+                    wrap.innerHTML = `
+                        <img src="${url}" alt="Certificate image ${i + 1}" onclick="openLightbox('${url}')">
+                        <button class="remove-img-btn" onclick="removeExistingImage(${i})" title="Remove this image" aria-label="Remove image">&#x2715;</button>`;
+                    container.appendChild(wrap);
+                }
             });
         }
 
@@ -805,6 +1082,7 @@
             document.body.style.overflow = '';
             editIdx = -1;
             editKeptImages = [];
+            editProcessed  = [];
         }
 
         document.getElementById('modalCloseBtn').addEventListener('click', closeEditModal);
@@ -812,7 +1090,8 @@
         editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
-                if (editModal.classList.contains('active')) closeEditModal();
+                if (document.getElementById('pdfViewer').classList.contains('active')) closePDFViewer();
+                else if (editModal.classList.contains('active')) closeEditModal();
                 else lightbox.classList.remove('active');
             }
         });
@@ -821,24 +1100,24 @@
             const subject     = document.getElementById('edit-subject').value.trim();
             const description = document.getElementById('edit-description').value.trim();
             const date        = document.getElementById('edit-date').value;
-            const newFiles    = Array.from(editImageInput.files);
 
             if (!subject || !description || !date) {
                 showToast('Please fill in all fields.', 'error'); return;
             }
-            if (editKeptImages.length === 0 && newFiles.length === 0) {
-                showToast('Please keep or add at least one image.', 'error'); return;
+            if (editKeptImages.length === 0 && editProcessed.length === 0) {
+                showToast('Please keep or add at least one file.', 'error'); return;
             }
 
             editSaveBtn.disabled = true;
             modalUpload.classList.add('active');
 
             try {
-                // Upload any newly added images
                 const newUrls = [];
-                for (let i = 0; i < newFiles.length; i++) {
-                    modalUploadMsg.textContent = `Uploading new image ${i + 1} of ${newFiles.length}…`;
-                    newUrls.push(await uploadToCloudinary(newFiles[i]));
+                for (let i = 0; i < editProcessed.length; i++) {
+                    const item = editProcessed[i];
+                    modalUploadMsg.textContent = `Uploading file ${i + 1} of ${editProcessed.length}…`;
+                    const url = await uploadToCloudinary(item.blob, 'image', item.name);
+                    newUrls.push(url);
                 }
 
                 modalUploadMsg.textContent = 'Saving changes to cloud…';
@@ -859,6 +1138,70 @@
                 editSaveBtn.disabled = false;
                 modalUpload.classList.remove('active');
             }
+        });
+
+        // ── PDF VIEWER (for raw PDF URLs) ─────────────────────────
+        let pdfViewerDoc   = null;
+        let pdfCurrentPage = 1;
+
+        async function openPDFViewer(url, title) {
+            const viewer = document.getElementById('pdfViewer');
+            document.getElementById('pdfViewerTitle').innerHTML = `<i class="fas fa-file-pdf"></i> ${title || 'Certificate PDF'}`;
+            document.getElementById('pdfOpenLink').href = url;
+            viewer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx    = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            try {
+                const arrayBuffer = await (await fetch(url)).arrayBuffer();
+                pdfViewerDoc   = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                pdfCurrentPage = 1;
+                await renderPDFPage(pdfCurrentPage);
+                updatePDFNav();
+            } catch (err) {
+                showToast('Could not load PDF: ' + err.message, 'error');
+                closePDFViewer();
+            }
+        }
+
+        async function renderPDFPage(pageNum) {
+            if (!pdfViewerDoc) return;
+            const page     = await pdfViewerDoc.getPage(pageNum);
+            const scale    = Math.min(window.innerWidth * 0.88 / page.getViewport({ scale: 1 }).width, 2);
+            const viewport = page.getViewport({ scale });
+            const canvas   = document.getElementById('pdfCanvas');
+            canvas.width   = viewport.width;
+            canvas.height  = viewport.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        }
+
+        function updatePDFNav() {
+            if (!pdfViewerDoc) return;
+            document.getElementById('pdfPageInfo').textContent = `Page ${pdfCurrentPage} / ${pdfViewerDoc.numPages}`;
+            document.getElementById('pdfPrevBtn').disabled = pdfCurrentPage <= 1;
+            document.getElementById('pdfNextBtn').disabled = pdfCurrentPage >= pdfViewerDoc.numPages;
+        }
+
+        document.getElementById('pdfPrevBtn').addEventListener('click', async () => {
+            if (pdfCurrentPage > 1) { pdfCurrentPage--; await renderPDFPage(pdfCurrentPage); updatePDFNav(); }
+        });
+        document.getElementById('pdfNextBtn').addEventListener('click', async () => {
+            if (pdfViewerDoc && pdfCurrentPage < pdfViewerDoc.numPages) {
+                pdfCurrentPage++; await renderPDFPage(pdfCurrentPage); updatePDFNav();
+            }
+        });
+
+        function closePDFViewer() {
+            document.getElementById('pdfViewer').classList.remove('active');
+            document.body.style.overflow = '';
+            pdfViewerDoc = null;
+        }
+        document.getElementById('pdfCloseBtn').addEventListener('click', closePDFViewer);
+        document.getElementById('pdfViewer').addEventListener('click', e => {
+            if (e.target === document.getElementById('pdfViewer')) closePDFViewer();
         });
 
         // ── Lightbox ─────────────────────────────────────────────
